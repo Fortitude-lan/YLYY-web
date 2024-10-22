@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-18 12:52:21
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-19 17:58:54
+ * @LastEditTime: 2024-10-22 18:47:23
 -->
 <template>
   <header class="header">
@@ -20,28 +20,149 @@
         </li>
       </ul>
     </nav>
-    <div class="auth">
-      <button class="login">登录</button>
-      <button class="register">注册</button>
-    </div>
+    <el-button class="login-btn" plain @click="dialogVisible = true"
+      >登录/注册</el-button
+    >
+    <!-- <button class="register">注册</button> -->
   </header>
+  <el-dialog
+    v-model="dialogVisible"
+    title=""
+    width="700"
+    :style="{ background: 'transparent' }"
+  >
+    <template #default>
+      <div class="sign-box">
+        <input type="checkbox" id="chk" aria-hidden="true" />
+        <div class="signup">
+          <label for="chk" aria-hidden="true">注册</label>
+          <el-form @submit.prevent="handleSignUp" class="form-layout">
+            <div class="form-row">
+              <el-form-item label="账号" class="form-item">
+                <el-input v-model="form.username" placeholder="账号" required />
+              </el-form-item>
+              <el-form-item label="电话号码" class="form-item">
+                <el-input v-model="form.phone" placeholder="电话" required />
+              </el-form-item>
+            </div>
+            <div class="form-row">
+              <el-form-item label="密码" class="form-item">
+                <el-input
+                  type="password"
+                  v-model="form.password"
+                  placeholder="Password"
+                  required
+                />
+              </el-form-item>
+              <el-form-item label="确认密码" class="form-item">
+                <el-input
+                  type="password"
+                  v-model="form.confirmPassword"
+                  placeholder="确认密码"
+                  required
+                />
+              </el-form-item>
+            </div>
+            <div class="form-row">
+              <el-form-item label="姓名" class="form-item">
+                <el-input v-model="form.username" placeholder="姓名" required />
+              </el-form-item>
+              <el-form-item label="就诊卡号" class="form-item">
+                <el-input
+                  v-model="form.cardNumber"
+                  placeholder="就诊卡号"
+                  required
+                />
+              </el-form-item>
+            </div>
+            <div class="form-row">
+              <div class="form-item">
+                <el-form-item label="性别">
+                  <el-select
+                    v-model="form.gender"
+                    placeholder="选择性别"
+                    required
+                  >
+                    <el-option label="男" value="male"></el-option>
+                    <el-option label="女" value="female"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="年龄">
+                  <el-input
+                    v-model="form.age"
+                    type="number"
+                    placeholder="请输入年龄"
+                    required
+                  ></el-input>
+                </el-form-item>
+              </div>
+              <el-form-item label="上传照片" class="form-item">
+                <el-upload
+                  class="upload-demo"
+                  drag
+                  action="/upload"
+                  show-file-list
+                  v-model="form.photo"
+                >
+                  <i class="el-icon-upload"></i>
+                  <div class="el-upload__text">点击上传</div>
+                </el-upload>
+              </el-form-item>
+            </div>
+
+            <el-button type="primary" native-type="submit">注册</el-button>
+          </el-form>
+        </div>
+        <div class="signin">
+          <form @submit.prevent="handleLogin">
+            <label for="chk" aria-hidden="true">登录</label>
+            <input
+              type="username"
+              name="username"
+              placeholder="用户名"
+              required
+            />
+            <input type="password" name="pwd" placeholder="密码" required />
+            <button type="submit">登录</button>
+          </form>
+        </div>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
-<script>
+<script setup>
 import { getFrontendRoutes } from "@/router/index";
-export default {
-  setup() {
-    const frontendRoutes = getFrontendRoutes();
-    const frontendMenuList = [
-      { path: "/front", name: "首页" }, // 补充第一个路由
-      ...frontendRoutes.flatMap((child) => ({
-        path: `/front/${child.path}`, // 使用绝对路径
-        name: child.name,
-      })),
-    ];
-    console.log(frontendMenuList);
-    return { frontendMenuList };
-  },
+import { ref } from "vue";
+
+// 控制对话框显示状态
+const dialogVisible = ref(false);
+
+// 获取前端路由
+const frontendRoutes = getFrontendRoutes();
+const frontendMenuList = [
+  { path: "/front", name: "首页" }, // 补充第一个路由
+  ...frontendRoutes.flatMap((child) => ({
+    path: `/front/${child.path}`, // 使用绝对路径
+    name: child.name,
+  })),
+];
+
+console.log(frontendMenuList);
+
+const form = ref({
+  username: "",
+  email: "",
+  phone: "",
+  gender: "",
+  password: "",
+  confirmPassword: "",
+  photo: null,
+  cardNumber: "",
+});
+const handleSignUp = () => {
+  // 处理注册逻辑
+  console.log(form.value);
 };
 </script>
 
@@ -86,24 +207,122 @@ export default {
     color: #fff;
   }
 }
+.form-layout {
+  width: 100%;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
 
-.auth {
+.form-row {
   display: flex;
+  justify-content: space-between;
 }
 
-.login,
-.register {
-  margin-left: 10px;
-  padding: 5px 10px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
+.form-item {
+  flex: 1; /* 等宽 */
+  margin-right: 20px; /* 控制项之间的间距 */
 }
 
-.login:hover,
-.register:hover {
-  background-color: #0056b3;
+.form-item:last-child {
+  margin-right: 0; /* 最后一个不需要右边距 */
+}
+.sign-box {
+  width: 100%;
+  height: 550px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 5px 20px 50px #000;
+  background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+
+  #chk {
+    display: none;
+  }
+
+  label {
+    color: #fff;
+    font-size: 2.3em;
+    justify-content: center;
+    display: flex;
+    margin: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+  }
+  input {
+    width: 60%;
+    height: 2rem;
+    background: #e0dede;
+    justify-content: center;
+    display: flex;
+    margin: 20px auto;
+    padding: 12px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+  }
+  button {
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: center;
+    display: block;
+    color: #fff;
+    background: #573b8a;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 30px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    transition: 0.2s ease-in;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #6d44b8;
+  }
+  .signin {
+    height: 450px;
+    background: #eee;
+    border-radius: 60% / 10%;
+    transform: translateY(-200px);
+    transition: 0.8s ease-in-out;
+    label {
+      color: #573b8a;
+      transform: scale(0.8);
+    }
+    input,
+    button {
+      height: 3rem;
+    }
+  }
+  .signup {
+    position: relative;
+    width: 100%;
+    height: 590px;
+    label {
+      margin: 30px;
+    }
+  }
+
+  #chk:checked ~ .signin {
+    transform: translateY(-580px);
+  }
+  #chk:checked ~ .signin label {
+    transform: scale(1);
+  }
+  #chk:checked ~ .signup label {
+    transform: scale(0.8);
+  }
+
+  :global(.el-form-item__label) {
+    color: #fff !important;
+  }
+  :global(.el-dialog) {
+    margin-top: 70px !important;
+  }
+  .upload-demo {
+    width: 100px;
+    height: 100px;
+  }
 }
 </style>
