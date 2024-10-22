@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-18 12:52:21
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-22 18:47:23
+ * @LastEditTime: 2024-10-22 20:46:07
 -->
 <template>
   <header class="header">
@@ -36,20 +36,32 @@
         <input type="checkbox" id="chk" aria-hidden="true" />
         <div class="signup">
           <label for="chk" aria-hidden="true">注册</label>
-          <el-form @submit.prevent="handleSignUp" class="form-layout">
+          <el-form
+            ref="formSignupRef"
+            :model="signupValidateForm"
+            class="form-layout"
+          >
             <div class="form-row">
               <el-form-item label="账号" class="form-item">
-                <el-input v-model="form.username" placeholder="账号" required />
+                <el-input
+                  v-model="signupValidateForm.username"
+                  placeholder="账号"
+                  required
+                />
               </el-form-item>
               <el-form-item label="电话号码" class="form-item">
-                <el-input v-model="form.phone" placeholder="电话" required />
+                <el-input
+                  v-model="signupValidateForm.phone"
+                  placeholder="电话"
+                  required
+                />
               </el-form-item>
             </div>
             <div class="form-row">
               <el-form-item label="密码" class="form-item">
                 <el-input
                   type="password"
-                  v-model="form.password"
+                  v-model="signupValidateForm.password"
                   placeholder="Password"
                   required
                 />
@@ -57,7 +69,7 @@
               <el-form-item label="确认密码" class="form-item">
                 <el-input
                   type="password"
-                  v-model="form.confirmPassword"
+                  v-model="signupValidateForm.confirmPassword"
                   placeholder="确认密码"
                   required
                 />
@@ -65,11 +77,15 @@
             </div>
             <div class="form-row">
               <el-form-item label="姓名" class="form-item">
-                <el-input v-model="form.username" placeholder="姓名" required />
+                <el-input
+                  v-model="signupValidateForm.name"
+                  placeholder="姓名"
+                  required
+                />
               </el-form-item>
               <el-form-item label="就诊卡号" class="form-item">
                 <el-input
-                  v-model="form.cardNumber"
+                  v-model="signupValidateForm.cardNumber"
                   placeholder="就诊卡号"
                   required
                 />
@@ -79,7 +95,7 @@
               <div class="form-item">
                 <el-form-item label="性别">
                   <el-select
-                    v-model="form.gender"
+                    v-model="signupValidateForm.gender"
                     placeholder="选择性别"
                     required
                   >
@@ -89,7 +105,7 @@
                 </el-form-item>
                 <el-form-item label="年龄">
                   <el-input
-                    v-model="form.age"
+                    v-model="signupValidateForm.age"
                     type="number"
                     placeholder="请输入年龄"
                     required
@@ -102,7 +118,7 @@
                   drag
                   action="/upload"
                   show-file-list
-                  v-model="form.photo"
+                  v-model="signupValidateForm.photo"
                 >
                   <i class="el-icon-upload"></i>
                   <div class="el-upload__text">点击上传</div>
@@ -110,21 +126,39 @@
               </el-form-item>
             </div>
 
-            <el-button type="primary" native-type="submit">注册</el-button>
+            <el-button
+              type="primary"
+              @click.prevent="handleSignUp(formSignupRef)"
+              >注册</el-button
+            >
           </el-form>
         </div>
         <div class="signin">
-          <form @submit.prevent="handleLogin">
+          <el-form
+            ref="formSigninRef"
+            :model="signinValidateForm"
+            class="form-layout"
+          >
             <label for="chk" aria-hidden="true">登录</label>
-            <input
-              type="username"
-              name="username"
-              placeholder="用户名"
-              required
-            />
-            <input type="password" name="pwd" placeholder="密码" required />
-            <button type="submit">登录</button>
-          </form>
+            <el-form-item label="用户名" class="form-item">
+              <el-input
+                v-model="signinValidateForm.username"
+                placeholder="用户名"
+                required
+              />
+            </el-form-item>
+            <el-form-item label="密  码" class="form-item">
+              <el-input
+                type="password"
+                v-model="signinValidateForm.password"
+                placeholder="密码"
+                required
+              />
+            </el-form-item>
+            <button type="submit" @click.prevent="handleLogin(formSigninRef)">
+              登录
+            </button>
+          </el-form>
         </div>
       </div>
     </template>
@@ -133,7 +167,9 @@
 
 <script setup>
 import { getFrontendRoutes } from "@/router/index";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
+import { loginService } from "@/services/headerServices";
+import { ElMessage } from "element-plus";
 
 // 控制对话框显示状态
 const dialogVisible = ref(false);
@@ -150,19 +186,54 @@ const frontendMenuList = [
 
 console.log(frontendMenuList);
 
-const form = ref({
+const formSignupRef = ref();
+const signupValidateForm = reactive({
   username: "",
-  email: "",
   phone: "",
-  gender: "",
   password: "",
   confirmPassword: "",
-  photo: null,
+  name: "",
   cardNumber: "",
+  gender: "",
+  age: "",
+  photo: null,
 });
-const handleSignUp = () => {
-  // 处理注册逻辑
-  console.log(form.value);
+const formSigninRef = ref();
+const signinValidateForm = reactive({
+  username: "",
+  password: "",
+});
+const handleLogin = (formEl) => {
+  if (!formSigninRef) return; // 处理注册逻辑
+  formEl.validate(async (valid) => {
+    if (valid) {
+      const params = {
+        ...signinValidateForm,
+      };
+      console.log(params);
+      const msg = await loginService(params);
+      if (msg == 0) {
+        ElMessage({
+          message: "登陆成功",
+          type: "success",
+        });
+      } else {
+        ElMessage.error("密码或账号错误");
+      }
+    } else {
+      console.log("error submit!");
+    }
+  });
+};
+const handleSignUp = (formEl) => {
+  if (!formSignupRef) return; // 处理注册逻辑
+  formEl.validate((valid) => {
+    if (valid) {
+      console.log(signupValidateForm.username);
+    } else {
+      console.log("error submit!");
+    }
+  });
 };
 </script>
 
@@ -290,7 +361,14 @@ const handleSignUp = () => {
       color: #573b8a;
       transform: scale(0.8);
     }
-    input,
+    ::v-deep .el-form-item__label {
+      width: 100px;
+    }
+    ::v-deep .el-input{
+      width: 90%;
+
+    }
+    ::v-deep .el-input,
     button {
       height: 3rem;
     }
@@ -301,6 +379,9 @@ const handleSignUp = () => {
     height: 590px;
     label {
       margin: 30px;
+    }
+    ::v-deep .el-form-item__label {
+      color: #fff !important;
     }
   }
 
@@ -314,9 +395,6 @@ const handleSignUp = () => {
     transform: scale(0.8);
   }
 
-  :global(.el-form-item__label) {
-    color: #fff !important;
-  }
   :global(.el-dialog) {
     margin-top: 70px !important;
   }
