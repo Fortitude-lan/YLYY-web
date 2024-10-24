@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-18 12:52:21
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-22 20:46:07
+ * @LastEditTime: 2024-10-24 09:59:03
 -->
 <template>
   <header class="header">
@@ -62,7 +62,7 @@
                 <el-input
                   type="password"
                   v-model="signupValidateForm.password"
-                  placeholder="Password"
+                  placeholder="密码"
                   required
                 />
               </el-form-item>
@@ -173,7 +173,6 @@ import { ElMessage } from "element-plus";
 
 // 控制对话框显示状态
 const dialogVisible = ref(false);
-
 // 获取前端路由
 const frontendRoutes = getFrontendRoutes();
 const frontendMenuList = [
@@ -278,6 +277,7 @@ const handleSignUp = (formEl) => {
     color: #fff;
   }
 }
+
 .form-layout {
   width: 100%;
   padding: 0 30px;
@@ -297,6 +297,7 @@ const handleSignUp = (formEl) => {
 .form-item:last-child {
   margin-right: 0; /* 最后一个不需要右边距 */
 }
+
 .sign-box {
   width: 100%;
   height: 550px;
@@ -364,9 +365,8 @@ const handleSignUp = (formEl) => {
     ::v-deep .el-form-item__label {
       width: 100px;
     }
-    ::v-deep .el-input{
+    ::v-deep .el-input {
       width: 90%;
-
     }
     ::v-deep .el-input,
     button {
