@@ -26,6 +26,8 @@ import NotFound from '@/views/404.vue'
 // import config from '@/views/modules/config/list.vue'
 // import heimingdan from '@/views/modules/heimingdan/list.vue'
 
+//图标
+import { IoFileTray } from "vue3-icons/io5";
 
 // 提取前端路由的函数
 export const getFrontendRoutes = () => {
@@ -33,7 +35,6 @@ export const getFrontendRoutes = () => {
     return frontRoute ? frontRoute.children.filter(child => child.show === true) : [];
 };
 //2.配置路由  
-
 const routes = [
     {
         path: '/front',
@@ -51,7 +52,8 @@ const routes = [
                 path: 'departmentNavigationCenter',
                 name: '科室导航中心',
                 show: true,
-                component: DepartmentNavigationCenter
+                component: DepartmentNavigationCenter,
+                meta: { icon: IoFileTray, title: 'center' }
             }
             // {
             //     path: '/updatePassword',

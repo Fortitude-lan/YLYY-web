@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <HeaderComponent />
@@ -13,14 +12,14 @@
 </template>
 
 <script>
-import HeaderComponent from '@/components/layout/Header.vue';
-import FooterComponent from '@/components/layout/Footer.vue';
+import HeaderComponent from "@/components/layout/Header.vue";
+import FooterComponent from "@/components/layout/Footer.vue";
 
 export default {
   components: {
     HeaderComponent,
-    FooterComponent
-  }
+    FooterComponent,
+  },
 };
 </script>
 

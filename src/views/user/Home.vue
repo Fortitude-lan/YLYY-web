@@ -1,24 +1,5 @@
-<!--
- * @Descripttion: 首页
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-17 14:13:55
- * @LastEditors: Hesin
- * @LastEditTime: 2024-10-21 11:06:01
--->
-
 <template>
-  <div class="block">
-    <el-carousel height="100vh">
-      <el-carousel-item v-for="(image, index) in carouselImages" :key="index">
-        <img
-          :src="`/springbootYL/${image}`"
-          style="width: 100%; height: 100%; object-fit: cover"
-        />
-      </el-carousel-item>
-    </el-carousel>
-
-    <!-- 响应式的父盒子 -->
+  <div>
     <div class="news-container">
       <!-- 系统简介 -->
       <div
@@ -27,7 +8,7 @@
           padding: '20px',
           boxShadow: '1px 2px 3px #eee',
           overflow: 'hidden',
-          marginBottom:'40px',
+          marginBottom: '40px',
           borderRadius: '16px',
           background: '#fff',
           width: '100%',
@@ -38,18 +19,9 @@
             {{ systemIntro.title }}<span> {{ systemIntro.subtitle }}</span>
           </h1>
         </div>
-        <div
-          :style="{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }"
-        >
+        <div :style="{ display: 'flex', justifyContent: 'space-between' }">
           <div
-            :style="{
-              width: '48%',
-              display: 'flex',
-              flexDirection: 'column',
-            }"
+            :style="{ width: '48%', display: 'flex', flexDirection: 'column' }"
           >
             <div>{{ systemIntro.content }}</div>
             <div
@@ -165,11 +137,7 @@
         </div>
         <div
           v-if="newsList.length > 0"
-          :style="{
-            width: '100%',
-            height: '375px',
-            overflowY: 'scroll',
-          }"
+          :style="{ width: '100%', height: '375px', overflowY: 'scroll' }"
         >
           <div
             v-for="(news, index) in newsList"
@@ -240,55 +208,37 @@
           </div>
         </div>
       </div>
-      <!-- <div class="news-grid">
-        <News
-          v-for="(news, index) in newsList"
-          :key="index"
-          :imageUrl="news.picture"
-          :title="news.title"
-          :description="news.introduction"
-          :price="news.price"
-          :duration="news.addtime"
-          :creatorImageUrl="news.creatorImageUrl"
-          :creatorName="news.addtime"
-        />
-      </div> -->
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from "vue";
 import {
-  fetchAbout,
   fetcSystemIntro,
-  fetchCarouselImages,
   fetchNewsList,
+  fetchAbout,
 } from "@/services/homeServices";
 import News from "@/components/News.vue";
 
-export default {
-  components: {
-    News,
-  },
-  data() {
-    return {
-      carouselImages: [], // 用于存放轮播图的数组
-      aboutUsDetail: {}, // 用于存放轮播图的数组
-      systemIntro: {}, // 用于存放轮播图的数组
-      newsList: [], // 用于存news的数组
-    };
-  },
-  async mounted() {
-    try {
-      this.carouselImages = await fetchCarouselImages(); // 获取轮播图数据
-      this.systemIntro = await fetcSystemIntro();
-      this.aboutUsDetail = await fetchAbout();
-      this.newsList = await fetchNewsList();
-    } catch (error) {
-      console.error("Error fetching Home Page:", error);
-    }
-  },
+// 响应式数据
+const aboutUsDetail = ref({});
+const systemIntro = ref({});
+const newsList = ref([]);
+
+// 异步获取数据
+const fetchData = async () => {
+  try {
+    systemIntro.value = await fetcSystemIntro();
+    aboutUsDetail.value = await fetchAbout();
+    newsList.value = await fetchNewsList();
+  } catch (error) {
+    console.error("Error fetching Home Page:", error);
+  }
 };
+
+// 在组件挂载时调用 fetchData
+onMounted(fetchData);
 </script>
 
 <style lang="scss" scoped>
@@ -318,12 +268,6 @@ export default {
   margin: 20px auto;
 }
 
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  width: 100%;
-}
 .aboutus-box {
   border: 1px solid #dfdfdf;
   padding: 20px;

@@ -1,30 +1,45 @@
-<!--
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-18 12:52:21
- * @LastEditors: Hesin
- * @LastEditTime: 2024-10-24 09:59:03
--->
 <template>
-  <header class="header">
-    <div class="logo">LOGO</div>
+  <div>
+    <header class="header">
+      <div class="logo">LOGO</div>
+      <el-button class="login-btn" plain @click="dialogVisible = true"
+        >登录/注册</el-button
+      >
+    </header>
     <nav class="menu">
       <ul class="menu-list">
         <li
-          class="menu-item"
           v-for="(route, index) in frontendMenuList"
           :key="index"
+          :class="isActive(route.path) ? 'menu-item curRoute' : 'menu-item'"
         >
-          <router-link :to="route.path">{{ route.name }}</router-link>
+          <router-link :to="route.path"
+            ><span>
+              <component :is="route.icon" />{{ route.name }}</span
+            ></router-link
+          >
         </li>
       </ul>
     </nav>
-    <el-button class="login-btn" plain @click="dialogVisible = true"
-      >登录/注册</el-button
-    >
-    <!-- <button class="register">注册</button> -->
-  </header>
+    <el-carousel height="60vh">
+      <el-carousel-item v-for="(image, index) in carouselImages" :key="index">
+        <img
+          :src="`/springbootYL/${image}`"
+          style="width: 100%; height: 100%; object-fit: cover"
+        />
+      </el-carousel-item>
+    </el-carousel>
+    <!-- 面包屑 -->
+    <el-breadcrumb separator="/" class="breadcrumb">
+      <el-breadcrumb-item :to="{ path: '/front' }"
+        >当前位置：</el-breadcrumb-item
+      >
+      <el-breadcrumb-item :to="{ path: route.path }">{{
+        route.name
+      }}</el-breadcrumb-item>
+    </el-breadcrumb>
+  </div>
+
   <el-dialog
     v-model="dialogVisible"
     title=""
@@ -34,13 +49,40 @@
     <template #default>
       <div class="sign-box">
         <input type="checkbox" id="chk" aria-hidden="true" />
+        <div class="signin">
+          <el-form
+            ref="formSigninRef"
+            :model="signinValidateForm"
+            class="form-layout"
+          >
+            <label for="chk" aria-hidden="true">登录</label>
+            <el-form-item label="账  号" class="form-item">
+              <el-input
+                v-model="signinValidateForm.username"
+                placeholder="账号"
+                required
+              />
+            </el-form-item>
+            <el-form-item label="密  码" class="form-item">
+              <el-input
+                type="password"
+                v-model="signinValidateForm.password"
+                placeholder="密码"
+                required
+              />
+            </el-form-item>
+            <button type="submit" @click.prevent="handleLogin(formSigninRef)">
+              登录
+            </button>
+          </el-form>
+        </div>
         <div class="signup">
-          <label for="chk" aria-hidden="true">注册</label>
           <el-form
             ref="formSignupRef"
             :model="signupValidateForm"
             class="form-layout"
           >
+            <label for="chk" aria-hidden="true">注册</label>
             <div class="form-row">
               <el-form-item label="账号" class="form-item">
                 <el-input
@@ -133,53 +175,47 @@
             >
           </el-form>
         </div>
-        <div class="signin">
-          <el-form
-            ref="formSigninRef"
-            :model="signinValidateForm"
-            class="form-layout"
-          >
-            <label for="chk" aria-hidden="true">登录</label>
-            <el-form-item label="用户名" class="form-item">
-              <el-input
-                v-model="signinValidateForm.username"
-                placeholder="用户名"
-                required
-              />
-            </el-form-item>
-            <el-form-item label="密  码" class="form-item">
-              <el-input
-                type="password"
-                v-model="signinValidateForm.password"
-                placeholder="密码"
-                required
-              />
-            </el-form-item>
-            <button type="submit" @click.prevent="handleLogin(formSigninRef)">
-              登录
-            </button>
-          </el-form>
-        </div>
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
+import { reactive, ref, onMounted } from "vue";
 import { getFrontendRoutes } from "@/router/index";
-import { reactive, ref } from "vue";
-import { loginService } from "@/services/headerServices";
+import { loginService,fetchCarouselImages } from "@/services/headerServices";
 import { ElMessage } from "element-plus";
+import { useRoute } from "vue-router";
+
+import { CiStar } from "vue3-icons/ci";
+
+//轮播图
+const carouselImages = ref([]);
+// 异步获取数据
+const fetchData = async () => {
+  try {
+    carouselImages.value = await fetchCarouselImages(); // 获取轮播图数据
+  } catch (error) {
+    console.error("Error fetching:", error);
+  }
+};
 
 // 控制对话框显示状态
 const dialogVisible = ref(false);
 // 获取前端路由
+
+const route = useRoute();
+const isActive = (path) => {
+  return route.path === path; // 判断当前路由是否与链接路径相同
+};
+// 获取前端路由
 const frontendRoutes = getFrontendRoutes();
 const frontendMenuList = [
-  { path: "/front", name: "首页" }, // 补充第一个路由
+  { path: "/front", name: "首页", icon: CiStar }, // 补充第一个路由
   ...frontendRoutes.flatMap((child) => ({
     path: `/front/${child.path}`, // 使用绝对路径
     name: child.name,
+    icon: child.meta.icon,
   })),
 ];
 
@@ -234,18 +270,28 @@ const handleSignUp = (formEl) => {
     }
   });
 };
+
+// 在组件挂载时调用 fetchData
+onMounted(fetchData);
 </script>
 
 <style lang="scss" scoped>
+// 当前路由
+.curRoute {
+  border-color: #00254a #00254a #006fc3 #006fc3;
+  background: url(http://codegen.caihongy.cn/20221027/8c0f3f3d4c0b4e38bd59dee72577a66b.png)
+    repeat-x;
+}
+
 /* 头部样式 */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: rgba(0, 0, 0, 0.5);
+  // background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   right: 0;
@@ -255,7 +301,7 @@ const handleSignUp = (formEl) => {
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #fff;
+  color: #000000;
 }
 
 .menu {
@@ -265,16 +311,30 @@ const handleSignUp = (formEl) => {
 .menu-list {
   display: flex;
   justify-content: center; /* 使菜单居中 */
+  align-items: center;
   list-style: none;
-  padding: 0;
-  margin: 0;
+  height: 40px;
+  background: url(https://codegen.caihongy.cn/20221027/4058b35f34564533adc258a0075041ed.png)
+    repeat-x;
 }
 
 .menu-item {
-  margin: 0 15px;
   cursor: pointer;
+  padding: 0 15px;
+  line-height: 40px;
+  border-color: #00254a #00254a #006fc3 #006fc3;
   a {
     color: #fff;
+    text-decoration: none;
+  }
+  span {
+    display: flex;
+    align-items: center;
+  }
+  &:hover {
+    border-color: #00254a #00254a #006fc3 #006fc3;
+    background: url(http://codegen.caihongy.cn/20221027/8c0f3f3d4c0b4e38bd59dee72577a66b.png)
+      repeat-x;
   }
 }
 
@@ -303,9 +363,8 @@ const handleSignUp = (formEl) => {
   height: 550px;
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 5px 20px 50px #000;
-  background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-
+  box-shadow: 5px 20px 50px #000000;
+  background: linear-gradient(to bottom, #2a6bb5, #2b60a2, #99bce5);
   #chk {
     display: none;
   }
@@ -339,7 +398,7 @@ const handleSignUp = (formEl) => {
     justify-content: center;
     display: block;
     color: #fff;
-    background: #573b8a;
+    background: #255da7;
     font-size: 1em;
     font-weight: bold;
     margin-top: 30px;
@@ -350,48 +409,60 @@ const handleSignUp = (formEl) => {
     cursor: pointer;
   }
   button:hover {
-    background: #6d44b8;
+    background: #4479ce;
   }
-  .signin {
+  .signup {
     height: 450px;
     background: #eee;
     border-radius: 60% / 10%;
-    transform: translateY(-200px);
+    transform: translateY(-210px);
     transition: 0.8s ease-in-out;
     label {
-      color: #573b8a;
+      color: #2f5da5;
       transform: scale(0.8);
+      margin-bottom: 20px;
     }
-    ::v-deep .el-form-item__label {
-      width: 100px;
+    :deep(.el-form-item__label) {
+      width: 80px;
     }
-    ::v-deep .el-input {
+    :deep(.el-input) {
       width: 90%;
     }
-    ::v-deep .el-input,
-    button {
-      height: 3rem;
-    }
   }
-  .signup {
+  .signin {
     position: relative;
     width: 100%;
     height: 590px;
     label {
-      margin: 30px;
+      margin-bottom: 60px;
     }
-    ::v-deep .el-form-item__label {
+    .form-item {
+      margin: 35px auto;
+      width: 60%;
+    }
+    :deep(.el-form-item__label) {
       color: #fff !important;
+    }
+
+    :deep(.el-input),
+    button {
+      height: 3rem;
+    }
+    button {
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 0.5rem;
+      margin-top: 45px;
     }
   }
 
-  #chk:checked ~ .signin {
+  #chk:checked ~ .signup {
     transform: translateY(-580px);
   }
-  #chk:checked ~ .signin label {
+  #chk:checked ~ .signup label {
     transform: scale(1);
   }
-  #chk:checked ~ .signup label {
+  #chk:checked ~ .signin label {
     transform: scale(0.8);
   }
 
@@ -402,5 +473,9 @@ const handleSignUp = (formEl) => {
     width: 100px;
     height: 100px;
   }
+}
+
+.breadcrumb {
+  margin: 20px 0 50px 20px;
 }
 </style>
