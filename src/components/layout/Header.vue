@@ -7,18 +7,26 @@
           v-if="isLoggedIn"
           :style="{ display: 'flex', alignItems: 'center' }"
         >
-          <el-avatar
-            :icon="FaUserAstronaut"
-            :size="35"
-            :style="{ background: '#1e62b9' }"
-          />
-          <span :style="{ marginLeft: '10px' }">{{ username }}</span>
-          <el-button
-            class="login-btn"
-            :style="{ marginLeft: '20px' }"
-            @click="handleLogout"
-            >退出</el-button
-          >
+          <el-dropdown placement="top-start">
+            <div>
+              <el-avatar
+                :icon="FaUserAstronaut"
+                :size="35"
+                :style="{ background: '#1e62b9' }"
+              />
+              <span :style="{ marginLeft: '10px' }">{{ username }}</span>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>
+                  <router-link :to="{ path: '/back' }">后台管理</router-link>
+                </el-dropdown-item>
+                <el-dropdown-item @click="handleLogout">
+                  退出
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
         <el-button
           v-if="!isLoggedIn"
@@ -241,7 +249,7 @@ const frontendMenuList = [
   ...frontendRoutes.flatMap((child) => ({
     path: `/front/${child.path}`, // 使用绝对路径
     name: child.name,
-    icon: child.meta.icon,
+    icon: child.icon,
   })),
 ];
 
