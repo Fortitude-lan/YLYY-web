@@ -17,7 +17,7 @@ import { get } from '@/utils/util';
 export const fetcSystemIntro = async (page = 1, limit = 10, sort = 'addtime', order = 'desc') => {
     try {
         const response = await get(API_ENDPOINTS.systemInfoAPI,);
-        console.log(response.data)
+        // console.log(response.data)
         return response.data
     } catch (error) {
         console.error('Error fetching carousel images:', error);

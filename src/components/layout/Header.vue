@@ -2,9 +2,32 @@
   <div>
     <header class="header">
       <div class="logo">LOGO</div>
-      <el-button class="login-btn" plain @click="dialogVisible = true"
-        >登录/注册</el-button
-      >
+      <div>
+        <div
+          v-if="isLoggedIn"
+          :style="{ display: 'flex', alignItems: 'center' }"
+        >
+          <el-avatar
+            :icon="FaUserAstronaut"
+            :size="35"
+            :style="{ background: '#1e62b9' }"
+          />
+          <span :style="{ marginLeft: '10px' }">{{ username }}</span>
+          <el-button
+            class="login-btn"
+            :style="{ marginLeft: '20px' }"
+            @click="handleLogout"
+            >退出</el-button
+          >
+        </div>
+        <el-button
+          v-if="!isLoggedIn"
+          class="login-btn"
+          plain
+          @click="dialogVisible = true"
+          >登录/注册</el-button
+        >
+      </div>
     </header>
     <nav class="menu">
       <ul class="menu-list">
@@ -183,10 +206,10 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
 import { getFrontendRoutes } from "@/router/index";
-import { loginService,fetchCarouselImages } from "@/services/headerServices";
+import { loginService, fetchCarouselImages } from "@/services/headerServices";
 import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
-
+import { FaUserAstronaut } from "vue3-icons/fa";
 import { CiStar } from "vue3-icons/ci";
 
 //轮播图
@@ -202,8 +225,11 @@ const fetchData = async () => {
 
 // 控制对话框显示状态
 const dialogVisible = ref(false);
-// 获取前端路由
+//登录验证
+const isLoggedIn = ref(false);
+const username = ref("");
 
+// 获取前端路由
 const route = useRoute();
 const isActive = (path) => {
   return route.path === path; // 判断当前路由是否与链接路径相同
@@ -238,6 +264,7 @@ const signinValidateForm = reactive({
   username: "",
   password: "",
 });
+// 登录处理
 const handleLogin = (formEl) => {
   if (!formSigninRef) return; // 处理注册逻辑
   formEl.validate(async (valid) => {
@@ -252,6 +279,8 @@ const handleLogin = (formEl) => {
           message: "登陆成功",
           type: "success",
         });
+        dialogVisible.value = false;
+        isLoggedIn.value = true;
       } else {
         ElMessage.error("密码或账号错误");
       }
@@ -260,6 +289,7 @@ const handleLogin = (formEl) => {
     }
   });
 };
+// 注册处理
 const handleSignUp = (formEl) => {
   if (!formSignupRef) return; // 处理注册逻辑
   formEl.validate((valid) => {
@@ -270,9 +300,31 @@ const handleSignUp = (formEl) => {
     }
   });
 };
-
-// 在组件挂载时调用 fetchData
-onMounted(fetchData);
+// 退出登录
+const handleLogout = () => {
+  // 退出登录逻辑
+  localStorage.clear();
+  isLoggedIn.value = false;
+  ElMessage({
+    message: "退出成功",
+    type: "success",
+  });
+};
+// 检查登录状态
+const checkLoginStatus = () => {
+  const role = localStorage.getItem("role");
+  if (role) {
+    isLoggedIn.value = true;
+    username.value = localStorage.getItem("username"); // 假设用户名存储在 localStorage 中
+  } else {
+    isLoggedIn.value = false;
+  }
+};
+// 在组件挂载时调用
+onMounted(() => {
+  fetchData();
+  checkLoginStatus();
+});
 </script>
 
 <style lang="scss" scoped>

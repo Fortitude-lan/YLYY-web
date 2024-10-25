@@ -10,8 +10,8 @@ import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.
 //公告信息
 import News from '@/views/user/News.vue'
 
-// import Login from '@/views/login.vue'
 import NotFound from '@/views/404.vue'
+//OK import Login from '@/views/login.vue'
 // import UpdatePassword from '@/views/update-password.vue'
 // import pay from '@/views/pay.vue'
 // import register from '@/views/register.vue'
