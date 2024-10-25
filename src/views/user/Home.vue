@@ -219,7 +219,6 @@ import {
   fetchNewsList,
   fetchAbout,
 } from "@/services/homeServices";
-import News from "@/components/News.vue";
 
 // 响应式数据
 const aboutUsDetail = ref({});

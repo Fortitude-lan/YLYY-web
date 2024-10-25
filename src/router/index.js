@@ -5,8 +5,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/views/index.vue'
 //首页
 import Home from '@/views/user/Home.vue'
-//展馆
+//科室导航中心
 import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.vue'
+//公告信息
+import News from '@/views/user/News.vue'
 
 // import Login from '@/views/login.vue'
 import NotFound from '@/views/404.vue'
@@ -53,6 +55,13 @@ const routes = [
                 name: '科室导航中心',
                 show: true,
                 component: DepartmentNavigationCenter,
+                meta: { icon: IoFileTray, title: 'center' }
+            },
+            {
+                path: 'news',
+                name: '公告信息',
+                show: true,
+                component: News,
                 meta: { icon: IoFileTray, title: 'center' }
             }
             // {
