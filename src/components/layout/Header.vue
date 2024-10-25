@@ -476,6 +476,6 @@ onMounted(fetchData);
 }
 
 .breadcrumb {
-  margin: 20px 0 50px 20px;
+  margin: 20px 0 30px 20px;
 }
 </style>

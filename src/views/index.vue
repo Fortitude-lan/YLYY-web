@@ -2,7 +2,7 @@
   <div>
     <HeaderComponent />
     <!-- 页头 -->
-    <main>
+    <main class="app-main">
       <router-view />
       <!-- 子路由渲染区域 -->
     </main>
@@ -23,4 +23,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.app-main {
+  // margin: 0 30px;
+}
+</style>
