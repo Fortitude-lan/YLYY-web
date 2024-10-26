@@ -26,15 +26,17 @@
           </template>
           <template v-else>
             <a-menu-item :key="route.path">
-              <component :is="route.icon" />
-              <span>{{ route.name }}</span>
+              <router-link :to="`${route.path}`">
+                <component :is="route.icon" />
+                <span>{{ route.name }}</span>
+              </router-link>
             </a-menu-item>
           </template>
         </template>
       </a-menu>
     </a-layout-sider>
-    <!--  -->
     <a-layout>
+      <!-- header -->
       <a-layout-header style="background: #fff; padding: 0">
         <menu-unfold-outlined
           v-if="collapsed"
@@ -53,6 +55,7 @@
           padding: '24px',
           background: '#fff',
           minHeight: '280px',
+          overflow: 'scroll',
         }"
       >
         <router-view />
@@ -64,9 +67,9 @@
 import { ref, onMounted, watch } from "vue";
 import { getBackRoutes } from "@/router/index";
 import { CiStar } from "vue3-icons/ci";
-
-const selectedKeys = ref([]);
+import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons-vue";
 const collapsed = ref(false);
+const selectedKeys = ref([]);
 
 // 获取后台路由
 const backRoutes = getBackRoutes();

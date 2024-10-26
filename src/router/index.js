@@ -4,14 +4,14 @@
  * @Author: Hesin
  * @Date: 2024-10-21 12:59:53
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-25 18:51:40
+ * @LastEditTime: 2024-10-25 19:15:21
  */
 
 
 import { createRouter, createWebHistory } from 'vue-router'
 
 // 布局
-import Index from '@/views/index.vue'
+import Index from '@/views/user/index.vue'
 import BackIndex from '@/views/admin/index.vue'
 /* ***********前台 start************ */
 //首页
