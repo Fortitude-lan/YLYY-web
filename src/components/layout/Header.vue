@@ -212,14 +212,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from "vue";
 import { getFrontendRoutes } from "@/router/index";
-import { loginService, fetchCarouselImages } from "@/services/headerServices";
-import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+
+import { ElMessage } from "element-plus";
+import { loginService, fetchCarouselImages } from "@/services/headerServices";
+import { reactive, ref, onMounted, computed } from "vue";
+//ICON
 import { FaUserAstronaut } from "vue3-icons/fa";
 import { CiStar } from "vue3-icons/ci";
-
 //轮播图
 const carouselImages = ref([]);
 // 异步获取数据
@@ -230,18 +232,14 @@ const fetchData = async () => {
     console.error("Error fetching:", error);
   }
 };
+const store = useStore();
+// 获取 isLoggedIn 状态
+const isLoggedIn = computed(() => store.state.isLoggedIn);
+const username = computed(() => store.state.username);
 
 // 控制对话框显示状态
 const dialogVisible = ref(false);
-//登录验证
-const isLoggedIn = ref(false);
-const username = ref("");
 
-// 获取前端路由
-const route = useRoute();
-const isActive = (path) => {
-  return route.path === path; // 判断当前路由是否与链接路径相同
-};
 // 获取前端路由
 const frontendRoutes = getFrontendRoutes();
 const frontendMenuList = [
@@ -252,8 +250,13 @@ const frontendMenuList = [
     icon: child.icon,
   })),
 ];
+// 获取前端路由
+const route = useRoute();
+const isActive = (path) => {
+  return route.path === path; // 判断当前路由是否与链接路径相同
+};
 
-console.log(frontendMenuList);
+// console.log(frontendMenuList);
 
 const formSignupRef = ref();
 const signupValidateForm = reactive({
@@ -288,7 +291,11 @@ const handleLogin = (formEl) => {
           type: "success",
         });
         dialogVisible.value = false;
-        isLoggedIn.value = true;
+        // 更新 Vuex 的登录状态
+        store.commit("SET_LOGIN", {
+          isLoggedIn: true,
+          username: params.username,
+        });
       } else {
         ElMessage.error("密码或账号错误");
       }
@@ -312,7 +319,8 @@ const handleSignUp = (formEl) => {
 const handleLogout = () => {
   // 退出登录逻辑
   localStorage.clear();
-  isLoggedIn.value = false;
+  // 更新 Vuex 的登录状态
+  store.commit("SET_LOGIN", { isLoggedIn: false, username: "" });
   ElMessage({
     message: "退出成功",
     type: "success",
@@ -322,10 +330,10 @@ const handleLogout = () => {
 const checkLoginStatus = () => {
   const role = localStorage.getItem("role");
   if (role) {
-    isLoggedIn.value = true;
-    username.value = localStorage.getItem("username"); // 假设用户名存储在 localStorage 中
-  } else {
-    isLoggedIn.value = false;
+    store.commit("SET_LOGIN", {
+      isLoggedIn: true,
+      username: localStorage.getItem("adminName"),
+    });
   }
 };
 // 在组件挂载时调用

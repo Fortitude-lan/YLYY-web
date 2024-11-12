@@ -96,6 +96,15 @@ const routes = [
             {
                 path: 'service',
                 name: '智能客服',
+                meta: { requiresAuth: true },
+                show: true,
+                component: LocationNav,
+                icon: RiCustomerService2Line
+            },
+            {
+                path: 'abc',
+                name: '个人中心',
+                meta: { requiresAuth: true },
                 show: true,
                 component: LocationNav,
                 icon: RiCustomerService2Line
@@ -241,15 +250,20 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
+import { ElMessage } from "element-plus";
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
     const role = localStorage.getItem("adminName"); // 直接从 localStorage 获取角色信息
     const isLoggedIn = !!role; // 判断用户是否登录
-    store.commit('setLoginStatus', { isLoggedIn, username: isLoggedIn ? role : '' }); // 
+    store.commit('setLoginState', { isLoggedIn, username: isLoggedIn ? role : '' }); // 
 
-    console.log('s守卫', isLoggedIn, to.meta.requiresAuth)
+    console.log('s守卫', to.meta.requiresAuth && !isLoggedIn)
     if (to.meta.requiresAuth && !isLoggedIn) {
+        ElMessage({
+            message: "无权访问,请登录!",
+            type: "error",
+        });
         next({ path: '/front' }); // 如果需要认证且未登录，重定向到登录页
     } else {
         next(); // 否则正常导航

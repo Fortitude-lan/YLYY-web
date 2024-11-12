@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 1.0
+ * @Author: Hesin
+ * @Date: 2024-11-12 23:17:02
+ * @LastEditors: Hesin
+ * @LastEditTime: 2024-11-12 23:36:38
+ */
 
 // store/index.js
 import { createStore } from 'vuex';
