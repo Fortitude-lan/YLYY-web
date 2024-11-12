@@ -1,14 +1,6 @@
-/*
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-21 12:59:53
- * @LastEditors: Hesin
- * @LastEditTime: 2024-11-12 23:12:41
- */
-
 
 import { createRouter, createWebHistory } from 'vue-router'
+import store from '@/store'; // 引入 Vuex store
 
 // 布局
 import Index from '@/views/user/index.vue'
@@ -114,20 +106,14 @@ const routes = [
             //     show: true,
             //     component: Center,
             //     icon: FaRegUser
-            // },
-            // {
-            //     path: 'locationNav',
-            //     name: '后台管理',
-            //     show: true,
-            //     component: LocationNav,
-            //     icon: IoFileTray
-            // },
+            // }
         ]
     },
     {
         path: '/back',
         name: '后台',
         component: BackIndex,
+        meta: { requiresAuth: true },
         children: [{
             // 这里不设置值，是把main作为默认页面
             path: '',
@@ -256,4 +242,17 @@ const router = createRouter({
     routes
 })
 
+// 路由守卫
+router.beforeEach((to, from, next) => {
+    const role = localStorage.getItem("adminName"); // 直接从 localStorage 获取角色信息
+    const isLoggedIn = !!role; // 判断用户是否登录
+    store.commit('setLoginStatus', { isLoggedIn, username: isLoggedIn ? role : '' }); // 
+
+    console.log('s守卫', isLoggedIn, to.meta.requiresAuth)
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        next({ path: '/front' }); // 如果需要认证且未登录，重定向到登录页
+    } else {
+        next(); // 否则正常导航
+    }
+});
 export default router
