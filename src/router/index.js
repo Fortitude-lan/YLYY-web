@@ -23,7 +23,6 @@ import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
 //个人中心
-import Center from '@/views/user/Center.vue'
 
 /* ***********前台 end************ */
 
