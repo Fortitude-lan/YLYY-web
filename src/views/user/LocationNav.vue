@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-12 22:36:06
+ * @LastEditTime: 2024-11-12 19:00:23
 -->
 
 <template>
@@ -27,13 +27,16 @@
           fontWeight: 'bold',
         }"
       >
-        公告信息
+        导航服务
       </h1>
     </div>
     <!-- 选择器 -->
     <el-form ref="formRef" :model="form" label-width="auto" class="form">
       <el-form-item label="出发地" prop="chufadi">
         <el-input v-model="form.chufadi" />
+      </el-form-item>
+      <el-form-item label="目的地" prop="mudidi">
+        <el-input v-model="form.mudidi" />
       </el-form-item>
       <el-form-item class="form-btns">
         <el-button type="primary" @click="onSubmit(formRef)">查询</el-button>
@@ -45,34 +48,23 @@
     <el-row :gutter="20">
       <!-- 设置卡片间距 -->
       <el-col
-        v-for="item in newsLIst"
+        v-for="item in dhList"
         :key="item.id"
         :xs="12"
         :sm="12"
-        :md="12"
-        :lg="12"
-        :xl="12"
+        :md="6"
+        :lg="6"
+        :xl="6"
       >
         <el-card class="custom-card">
           <template #header>
-            <h3>{{ item.title }}</h3>
+            <h3>{{ item.chufadi }}</h3>
           </template>
-          <div class="news">
-            <img
-              :src="`/springbootYL/${item.picture}`"
-              style="
-                width: 150px;
-                height: 150px;
-                display: block;
-                border-radius: 10px;
-                padding: 5px;
-                background-color: #fff;
-                border: 1px solid #eee;
-              "
-              :alt="item.title"
-            />
-            <p>{{ item.introduction }}</p>
-          </div>
+          <img
+            :src="`/springbootYL/${item.luxiantu.split(',')[0]}`"
+            style="width: 100%; height: 100%; display: block"
+            :alt="item.title"
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -81,14 +73,14 @@
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
-import { fetchNewsList } from "@/services/homeServices";
+import { fetchDaohangList } from "@/services/departServices";
 // 响应式数据
-const newsLIst = ref({});
+const dhList = ref({});
 
 // 异步获取数据
 const fetchData = async () => {
   try {
-    newsLIst.value = await fetchNewsList();
+    dhList.value = await fetchDaohangList();
   } catch (error) {
     console.error("Error fetching Home Page:", error);
   }
@@ -105,7 +97,7 @@ const onSubmit = async (formEl) => {
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       const query = {};
-      console.log(form);
+      console.log(form)
       if (form.chufadi) {
         query.chufadi = `%${form.chufadi}%`;
       }
@@ -113,7 +105,7 @@ const onSubmit = async (formEl) => {
         query.mudedi = `%${form.mudedi}%`;
       }
       // 发送请求
-      newsLIst.value = await fetchNewsList(query);
+      dhList.value = await fetchDaohangList(query);
       console.log("submit!");
     } else {
       console.log("error submit!", fields);
@@ -150,7 +142,7 @@ onMounted(fetchData);
 }
 .custom-card {
   cursor: pointer;
-  height: 250px; /* 固定卡片高度 */
+  height: 280px; /* 固定卡片高度 */
   margin: 15px 0;
   display: flex;
   flex-direction: column;
@@ -164,7 +156,6 @@ onMounted(fetchData);
       margin: 4px 0px 0px;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
       color: rgb(51, 51, 51);
       border-radius: 8px;
       background: radial-gradient(
@@ -174,27 +165,12 @@ onMounted(fetchData);
       );
       line-height: 30px;
       font-size: 14px;
+      text-overflow: ellipsis;
     }
   }
   :deep(.el-card__body) {
     height: 290px;
     padding: 10px;
-  }
-  .news {
-    display: flex;
-    justify-content: space-between;
-    p {
-      padding: 0 5px;
-      margin: 0;
-      font-size: 14px;
-      height: 160px;
-      overflow: hidden; /* 隐藏超出部分 */
-      text-overflow: ellipsis; /* 在超出文本末尾显示省略号 */
-      display: -webkit-box; /* 使用弹性盒子模型 */
-      -webkit-line-clamp: 7; /* 限制显示3行文本 */
-      -webkit-box-orient: vertical; /* 设置盒子的方向为垂直 */
-      white-space: normal; /* 允许文本换行 */
-    }
   }
   &:hover {
     transform: translateY(-5px);

@@ -18,6 +18,8 @@ import BackIndex from '@/views/admin/index.vue'
 import Home from '@/views/user/Home.vue'
 //科室导航中心
 import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.vue'
+//导航服务
+import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
 /* ***********前台 end************ */
@@ -80,6 +82,13 @@ const routes = [
                 name: '科室导航中心',
                 show: true,
                 component: DepartmentNavigationCenter,
+                icon: IoFileTray
+            },
+            {
+                path: 'locationNav',
+                name: '导航服务',
+                show: true,
+                component: LocationNav,
                 icon: IoFileTray
             },
             {

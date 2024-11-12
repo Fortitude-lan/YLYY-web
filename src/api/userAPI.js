@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-21 09:07:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-25 10:47:53
+ * @LastEditTime: 2024-11-12 19:04:31
  */
 export const API_ENDPOINTS = {
   lunbotuAPI: '/config/list', //轮播图接口
@@ -14,5 +14,6 @@ export const API_ENDPOINTS = {
   loginAPI: '/yonghu/login', //登录接口
   keshifenleiAPI: '/option/keshifenlei/keshifenlei',//科室分类
   keshixinxiAPI: 'keshixinxi/list',//科室信息list
+  daohangfuwuAPI: 'daohangfuwu/list',//导航信息list
   // 可以在这里继续添加其他接口路径
 };
