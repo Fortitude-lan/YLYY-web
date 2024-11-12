@@ -1,6 +1,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'; // 引入 Vuex store
+import { ElMessage } from "element-plus";
 
 // 布局
 import Index from '@/views/user/index.vue'
@@ -15,6 +16,7 @@ import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
 //个人中心
+import UserCen from '@/views/user/UserCen.vue';
 
 /* ***********前台 end************ */
 
@@ -102,20 +104,14 @@ const routes = [
                 icon: RiCustomerService2Line
             },
             {
-                path: 'abc',
+                path: 'userCen',
                 name: '个人中心',
                 meta: { requiresAuth: true },
                 show: true,
-                component: LocationNav,
-                icon: RiCustomerService2Line
+                component: UserCen,
+                icon: FaRegUser
             },
-            // {
-            //     path: 'center',
-            //     name: '个人中心',
-            //     show: true,
-            //     component: Center,
-            //     icon: FaRegUser
-            // }
+
         ]
     },
     {
@@ -132,7 +128,7 @@ const routes = [
         },
         {
             path: 'usercenter',
-            name: '个人中心',
+            name: '用户中心',
             show: true,
             icon: IoFileTray,
             children: [{
@@ -250,8 +246,6 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
-import { ElMessage } from "element-plus";
-
 // 路由守卫
 router.beforeEach((to, from, next) => {
     const role = localStorage.getItem("adminName"); // 直接从 localStorage 获取角色信息

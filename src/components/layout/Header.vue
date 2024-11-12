@@ -256,7 +256,7 @@ const isActive = (path) => {
   return route.path === path; // 判断当前路由是否与链接路径相同
 };
 
-// console.log(frontendMenuList);
+console.log(frontendMenuList);
 
 const formSignupRef = ref();
 const signupValidateForm = reactive({
