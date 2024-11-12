@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-21 12:59:53
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-25 19:15:21
+ * @LastEditTime: 2024-11-12 23:12:41
  */
 
 
@@ -22,6 +22,9 @@ import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.
 import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
+//个人中心
+import Center from '@/views/user/Center.vue'
+
 /* ***********前台 end************ */
 
 /* ***********后台 start************ */
@@ -53,7 +56,8 @@ import NotFound from '@/views/404.vue'
 
 //图标
 import { IoFileTray } from "vue3-icons/io5";
-
+import { RiCustomerService2Line } from "vue3-icons/ri";
+import { FaRegUser } from "vue3-icons/fa6";
 // 提取前端路由的函数
 export const getFrontendRoutes = () => {
     const frontRoute = routes.find(route => route.path === '/front');
@@ -97,7 +101,62 @@ const routes = [
                 show: true,
                 component: News,
                 icon: IoFileTray
-            }
+            },
+            {
+                path: 'service',
+                name: '智能客服',
+                show: true,
+                component: LocationNav,
+                icon: RiCustomerService2Line
+            },
+            // {
+            //     path: 'center',
+            //     name: '个人中心',
+            //     show: true,
+            //     component: Center,
+            //     icon: FaRegUser
+            // },
+            // {
+            //     path: 'locationNav',
+            //     name: '后台管理',
+            //     show: true,
+            //     component: LocationNav,
+            //     icon: IoFileTray
+            // },
+        ]
+    },
+    {
+        path: '/back',
+        name: '后台',
+        component: BackIndex,
+        children: [{
+            // 这里不设置值，是把main作为默认页面
+            path: '',
+            name: '系统首页',
+            component: HomeBack,
+            icon: ''
+        },
+        {
+            path: 'usercenter',
+            name: '个人中心',
+            show: true,
+            icon: IoFileTray,
+            children: [{
+                // 这里不设置值，是把main作为默认页面
+                path: 'index',
+                name: '修改密码',
+                component: UserCenter,
+                icon: ''
+            },
+            {
+                // 这里不设置值，是把main作为默认页面
+                path: 'userinfo',
+                name: '个人信息',
+                component: UserInfo,
+                icon: ''
+            }]
+        }
+
             // {
             //     path: '/updatePassword',
             //     name: '修改密码',
@@ -170,38 +229,6 @@ const routes = [
             //     component: config
             // }
         ]
-    },
-    {
-        path: '/back',
-        name: '后台',
-        component: BackIndex,
-        children: [{
-            // 这里不设置值，是把main作为默认页面
-            path: '',
-            name: '系统首页',
-            component: HomeBack,
-            icon: ''
-        },
-        {
-            path: 'usercenter',
-            name: '个人中心',
-            show: true,
-            icon: IoFileTray,
-            children: [{
-                // 这里不设置值，是把main作为默认页面
-                path: 'index',
-                name: '修改密码',
-                component: UserCenter,
-                icon: ''
-            },
-            {
-                // 这里不设置值，是把main作为默认页面
-                path: 'userinfo',
-                name: '个人信息',
-                component: UserInfo,
-                icon: ''
-            }]
-        }]
     },
     // {
     //     path: '/login',
