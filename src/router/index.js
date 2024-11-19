@@ -15,6 +15,8 @@ import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.
 import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
+//客服
+import Chat from '@/views/user/Chat.vue'
 //个人中心
 import UserCen from '@/views/user/UserCen.vue';
 
@@ -96,11 +98,11 @@ const routes = [
                 icon: IoFileTray
             },
             {
-                path: 'service',
+                path: 'chat',
                 name: '智能客服',
                 meta: { requiresAuth: true },
                 show: true,
-                component: LocationNav,
+                component: Chat,
                 icon: RiCustomerService2Line
             },
             {

@@ -8,7 +8,7 @@
 -->
 
 <template>
-    <div class="departM">
+    <div class="pageM">
       <!-- title -->
       <div
         :style="{
@@ -131,7 +131,7 @@
   </script>
   
   <style lang="scss" scoped>
-  .departM {
+  .pageM {
     padding: 0 5%;
   }
   .form {

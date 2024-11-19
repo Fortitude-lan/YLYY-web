@@ -8,7 +8,7 @@
 -->
 
 <template>
-  <div class="departM">
+  <div class="pageM">
     <!-- title -->
     <div
       :style="{
@@ -168,7 +168,7 @@ onMounted(fetchData);
 </script>
 
 <style lang="scss" scoped>
-.departM {
+.pageM {
   padding: 0 5%;
 }
 .form {

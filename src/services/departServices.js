@@ -14,7 +14,7 @@ import { get } from '@/utils/util';
 //科室分类
 export const fetcKeshifenlei = async () => {
     try {
-        const response = await get(API_ENDPOINTS.keshifenleiAPI,);
+        const response = await get(API_ENDPOINTS.keshifenleiAPI);
         return response.data
     } catch (error) {
         console.error('Error fetching carousel images:', error);

@@ -15,5 +15,8 @@ export const API_ENDPOINTS = {
   keshifenleiAPI: '/option/keshifenlei/keshifenlei',//科室分类
   keshixinxiAPI: 'keshixinxi/list',//科室信息list
   daohangfuwuAPI: 'daohangfuwu/list',//导航信息list
+  chatAPI: 'chat/list',//聊天客服
+  chatAddAPI: 'chat/add',//聊天
+  userInfoAPI: 'yonghu/session',//用户信息
   // 可以在这里继续添加其他接口路径
 };

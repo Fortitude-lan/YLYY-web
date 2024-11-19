@@ -4,11 +4,11 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 13:27:28
+ * @LastEditTime: 2024-11-19 13:55:56
 -->
 
 <template>
-  <div class="departM">
+  <div class="pageM">
     <!-- title -->
     <div
       :style="{
@@ -159,7 +159,7 @@ onMounted(fetchData);
 </script>
 
 <style lang="scss" scoped>
-.departM {
+.pageM {
   padding: 0 5%;
 }
 .form {

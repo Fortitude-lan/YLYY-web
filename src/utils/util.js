@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 1.0
+ * @Author: Hesin
+ * @Date: 2024-10-21 09:07:55
+ * @LastEditors: Hesin
+ * @LastEditTime: 2024-11-19 15:15:36
+ */
 import axios from 'axios';
 
 // 创建 Axios 实例
@@ -9,8 +17,16 @@ const http = axios.create({
 // 请求拦截器
 http.interceptors.request.use(
     config => {
-        // 可以在这里添加 Authorization 头或其他请求配置
-        return config;
+        console.log('请求拦截')
+        // 从 localStorage 获取 token
+        const token = localStorage.getItem('Token'); // 假设 token 存储在 localStorage 中
+        // 如果 token 存在，添加 Authorization 头部
+        if (token) {
+            config.headers['Token'] = token; // 设置自定义 Token 头
+            config.headers['x-requested-with'] = 'XMLHttpRequest';
+        }
+
+        return config; // 返回配置对象
     },
     error => {
         return Promise.reject(error);
