@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-22 19:25:39
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 16:06:58
+ * @LastEditTime: 2024-11-19 17:12:16
  */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
@@ -91,24 +91,43 @@ export const getSession = async () => {
     try {
         // 发起请求，直接在请求头中带上 token
         const response = await get(API_ENDPOINTS.userInfoAPI);
+        console.log(response.code === 0, response.data)
 
         // 处理请求结果
-        if (response.data.code === 0) {
-            const sessionData = response.data.data;
+        if (response.code === 0) {
+            const sessionData = response.data;
 
             // 存储用户 session 信息到 localStorage
             localStorage.setItem("userid", sessionData.id);
             if (sessionData.vip) {
                 localStorage.setItem("vip", sessionData.vip);
             }
-
             // 判断头像字段并存储
             const headportrait = sessionData.touxiang || sessionData.headportrait || "";
             localStorage.setItem("headportrait", headportrait);
+            return response.data
         } else {
             console.error("Error fetching session data:", response.data.message);
         }
     } catch (error) {
         console.error("Error in getSession:", error);
+    }
+};
+//信息修改
+
+export const fetchUpdateUserInfo = async (params) => {
+
+    try {
+        const timestamp = new Date().getTime();
+        const userid = localStorage.getItem("userid"); // 假设用户ID存储在 localStorage 中
+        const resParams = {
+            addtime: timestamp,
+            id: userid,
+            ...params
+        }
+        const response = await await post(API_ENDPOINTS.userUpdateAPI, resParams);
+        return response.code
+    } catch (error) {
+        console.error("Error sending chat message:", error);
     }
 };

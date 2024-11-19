@@ -61,7 +61,7 @@
             <h3>{{ item.chufadi }}</h3>
           </template>
           <img
-            :src="`/springbootYL/${item.luxiantu.split(',')[0]}`"
+            :src="`${baseUrl}${item.luxiantu.split(',')[0]}`"
             style="width: 100%; height: 100%; display: block"
             :alt="item.title"
           />
@@ -86,6 +86,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { fetchDaohangList } from "@/services/departServices";
+import { baseUrl } from "@/utils/util";
 
 // 分页状态
 const pagination = reactive({

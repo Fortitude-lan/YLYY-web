@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 13:19:27
+ * @LastEditTime: 2024-11-19 16:31:37
 -->
 
 <template>
@@ -75,7 +75,7 @@
             <h3>{{ item.keshimingcheng }}</h3>
           </template>
           <img
-            :src="`/springbootYL/${item.tupian.split(',')[0]}`"
+            :src="`${baseUrl}${item.tupian.split(',')[0]}`"
             style="width: 100%; height: 100%; display: block"
             :alt="item.title"
           />
@@ -99,6 +99,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { fetcKeshifenlei, fetchKeshiList } from "@/services/departServices";
+import { baseUrl } from "@/utils/util";
 
 // 分页状态
 const pagination = reactive({
@@ -138,7 +139,7 @@ const buildQueryParams = () => {
 // 异步获取数据
 const fetchData = async () => {
   try {
-    ksflList.value = await fetcKeshifenlei();
+    ksflLisst.value = await fetcKeshifenlei();
     ksflList.value.unshift("全部");
     // 获取科室信息，包含分页
     const query = buildQueryParams(); // 使用统一查询方法

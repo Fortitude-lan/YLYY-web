@@ -59,7 +59,7 @@
           </template>
           <div class="news">
             <img
-              :src="`/springbootYL/${item.picture}`"
+              :src="`${baseUrl}${item.picture}`"
               style="
                 width: 150px;
                 height: 150px;
@@ -93,6 +93,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { fetchNewsList } from "@/services/homeServices";
+import { baseUrl } from "@/utils/util";
 
 // 分页状态
 const pagination = reactive({

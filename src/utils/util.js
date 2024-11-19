@@ -7,10 +7,10 @@
  * @LastEditTime: 2024-11-19 15:15:36
  */
 import axios from 'axios';
-
+export const baseUrl = '/springbootYL'
 // 创建 Axios 实例
 const http = axios.create({
-    baseURL: '/springbootYL', // 替换为你的 API 基础 URL
+    baseURL: baseUrl, // 替换为你的 API 基础 URL
     timeout: 10000, // 请求超时设置
 });
 

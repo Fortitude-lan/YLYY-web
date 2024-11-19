@@ -38,7 +38,7 @@
                   width: '48%',
                   height: '120px',
                 }"
-                :src="`/springbootYL/${systemIntro.picture2}`"
+                :src="`${baseUrl}${systemIntro.picture2}`"
               />
               <img
                 :style="{
@@ -47,7 +47,7 @@
                   width: '48%',
                   height: '120px',
                 }"
-                :src="`/springbootYL/${systemIntro.picture3}`"
+                :src="`${baseUrl}${systemIntro.picture3}`"
               />
             </div>
           </div>
@@ -61,7 +61,7 @@
               width: '48%',
               height: '360px',
             }"
-            :src="`/springbootYL/${systemIntro.picture1}`"
+            :src="`${baseUrl}${systemIntro.picture1}`"
           />
         </div>
       </div>
@@ -92,7 +92,7 @@
               float: 'left',
               height: '170px',
             }"
-            :src="`/springbootYL/${aboutUsDetail.picture1}`"
+            :src="`${baseUrl}${aboutUsDetail.picture1}`"
           />
           <img
             :style="{
@@ -104,7 +104,7 @@
               float: 'right',
               height: '170px',
             }"
-            :src="`/springbootYL/${aboutUsDetail.picture2}`"
+            :src="`${baseUrl}${aboutUsDetail.picture2}`"
           />
           <img
             :style="{
@@ -114,7 +114,7 @@
               display: 'none',
               height: '100px',
             }"
-            :src="`/springbootYL/${aboutUsDetail.picture3}`"
+            :src="`${baseUrl}${aboutUsDetail.picture3}`"
           />
         </div>
         <div
@@ -203,7 +203,7 @@
                 borderRadius: '8px',
                 height: '100px',
               }"
-              :src="`/springbootYL/${news.picture}`"
+              :src="`${baseUrl}${news.picture}`"
             />
           </div>
         </div>
@@ -213,6 +213,8 @@
 </template>
 
 <script setup>
+import { baseUrl } from "@/utils/util";
+
 import { ref, onMounted } from "vue";
 import {
   fetcSystemIntro,

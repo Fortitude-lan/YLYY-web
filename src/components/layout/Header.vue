@@ -55,7 +55,7 @@
     <el-carousel height="60vh">
       <el-carousel-item v-for="(image, index) in carouselImages" :key="index">
         <img
-          :src="`/springbootYL/${image}`"
+          :src="`${baseUrl}${image}`"
           style="width: 100%; height: 100%; object-fit: cover"
         />
       </el-carousel-item>
@@ -215,15 +215,21 @@
 import { getFrontendRoutes } from "@/router/index";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
+import { baseUrl } from "@/utils/util";
 
 import { ElMessage } from "element-plus";
-import { loginService, fetchCarouselImages } from "@/services/headerServices";
+import {
+  loginService,
+  fetchCarouselImages,
+  getSession,
+} from "@/services/headerServices";
 import { reactive, ref, onMounted, computed } from "vue";
 //ICON
 import { FaUserAstronaut } from "vue3-icons/fa";
 import { CiStar } from "vue3-icons/ci";
 //轮播图
 const carouselImages = ref([]);
+
 // 异步获取数据
 const fetchData = async () => {
   try {
@@ -291,6 +297,8 @@ const handleLogin = (formEl) => {
           type: "success",
         });
         dialogVisible.value = false;
+        //get UIID
+        getSession();
         // 更新 Vuex 的登录状态
         store.commit("SET_LOGIN", {
           isLoggedIn: true,
