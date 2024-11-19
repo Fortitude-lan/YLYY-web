@@ -29,11 +29,17 @@
             </el-form-item>
             <el-form-item label="密码" class="form-item" required>
               <el-input
-                type="mima"
+                :type="isPasswordVisible ? 'text' : 'password'"
                 v-model="infoValidateForm.mima"
                 placeholder="密码"
                 required
-              />
+              >
+                <template #append>
+                  <component :is="isPasswordVisible ? PiEyeBold :
+                  PiEyeClosed " @click="togglePasswordVisibility"
+                  style="cursor: pointer; font-size: 20px;" />
+                </template>
+              </el-input>
             </el-form-item>
           </div>
           <div class="form-row">
@@ -130,7 +136,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-
+import { PiEyeBold, PiEyeClosed  } from "vue3-icons/pi";
 import { getSession, fetchUpdateUserInfo } from "@/services/headerServices";
 import { baseUrl } from "@/utils/util";
 // 响应式数据
@@ -148,6 +154,13 @@ const infoValidateForm = reactive({
   zhengzhuangmiaoshu: "",
   zhaopian: null,
 });
+// 控制密码显示/隐藏的状态
+const isPasswordVisible = ref(false);
+// 切换密码可见性
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
+
 // 异步获取数据
 const fetchData = async () => {
   try {
