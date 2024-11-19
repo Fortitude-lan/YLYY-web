@@ -262,9 +262,9 @@ onMounted(fetchData);
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 20px;
-
   width: 100%;
   margin: 20px auto;
+  background: url("https://th.bing.com/th/id/R.e79f3521a3d17e5eded8516090129919?rik=7XsbMzDS%2fxxPSA&riu=http%3a%2f%2fseopic.699pic.com%2fphoto%2f40006%2f6172.jpg_wh1200.jpg&ehk=RrtXDAB4rqFPKHTOSeYDQGtPHxMv0ZDk1QznHRS0QJE%3d&risl=&pid=ImgRaw&r=0") fixed;
 }
 
 .aboutus-box {

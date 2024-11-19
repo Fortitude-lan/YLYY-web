@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-25 13:38:55
+ * @LastEditTime: 2024-11-19 13:19:27
 -->
 
 <template>
@@ -82,27 +82,35 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row style="margin: 30px 0">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :current-page="pagination.currentPage"
+        :page-size="pagination.pageSize"
+        :page-count="pagination.totalPage"
+        @current-change="handlePageChange"
+        @size-change="handleSizeChange"
+      />
+    </el-row>
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { fetcKeshifenlei, fetchKeshiList } from "@/services/departServices";
+
+// 分页状态
+const pagination = reactive({
+  currentPage: 1, // 当前页码
+  pageSize: 10, // 每页条数
+  totalPage: 0, // 总页数，从接口返回
+});
+
 // 响应式数据
 const ksflList = ref({});
 const ksxxList = ref({});
 
-// 异步获取数据
-const fetchData = async () => {
-  try {
-    ksflList.value = await fetcKeshifenlei();
-    ksflList.value.unshift("全部");
-
-    ksxxList.value = await fetchKeshiList();
-  } catch (error) {
-    console.error("Error fetching Home Page:", error);
-  }
-};
 const formRef = ref();
 const form = reactive({
   keshifenlei: "全部",
@@ -110,28 +118,49 @@ const form = reactive({
   keshimingcheng: "",
   yishengxingming: "",
 });
-
+// 构建查询参数
+const buildQueryParams = () => {
+  const query = {};
+  if (form.keshifenlei && form.keshifenlei !== "全部") {
+    query.keshifenlei = form.keshifenlei;
+  }
+  if (form.keshihao) {
+    query.keshihao = `%${form.keshihao}%`;
+  }
+  if (form.keshimingcheng) {
+    query.keshimingcheng = `%${form.keshimingcheng}%`;
+  }
+  if (form.yishengxingming) {
+    query.yishengxingming = `%${form.yishengxingming}%`;
+  }
+  return query;
+};
+// 异步获取数据
+const fetchData = async () => {
+  try {
+    ksflList.value = await fetcKeshifenlei();
+    ksflList.value.unshift("全部");
+    // 获取科室信息，包含分页
+    const query = buildQueryParams(); // 使用统一查询方法
+    const { list, totalPage, currPage } = await fetchKeshiList(
+      query,
+      pagination.currentPage,
+      pagination.pageSize
+    );
+    ksxxList.value = list;
+    pagination.totalPage = totalPage || 0; // 更新总页数
+    pagination.currentPage = currPage || 1; // 更新当前页码
+  } catch (error) {
+    console.error("Error fetching Home Page:", error);
+  }
+};
 //查找
 const onSubmit = async (formEl) => {
   if (!formEl) return;
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const query = {};
-      if (form.keshifenlei && form.keshifenlei !== "全部") {
-        query.keshifenlei = form.keshifenlei;
-      }
-      if (form.keshihao) {
-        query.keshihao = `%${form.keshihao}%`;
-      }
-      if (form.keshimingcheng) {
-        query.keshimingcheng = `%${form.keshimingcheng}%`;
-      }
-      if (form.yishengxingming) {
-        query.yishengxingming = `%${form.yishengxingming}%`;
-      }
-
-      // 发送请求
-      ksxxList.value = await fetchKeshiList(query);
+      pagination.currentPage = 1; // 查询时重置为第一页
+      await fetchData();
       console.log("submit!");
     } else {
       console.log("error submit!", fields);
@@ -141,16 +170,26 @@ const onSubmit = async (formEl) => {
 
 const resetForm = (formEl) => {
   if (!formEl) return;
-  console.log("sssss");
   formEl.resetFields();
 };
+// 切换页码
+const handlePageChange = async (page) => {
+  pagination.currentPage = page;
+  await fetchData();
+};
 
+// 每页条数仍然由前端控制（可选）
+const handleSizeChange = async (size) => {
+  pagination.pageSize = size;
+  pagination.currentPage = 1; // 重置为第一页
+  await fetchData();
+};
 // 在组件挂载时调用 fetchData
 onMounted(fetchData);
 </script>
 
 <style lang="scss" scoped>
-.departM{
+.departM {
   padding: 0 5%;
 }
 .form {

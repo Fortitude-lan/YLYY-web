@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-21 09:07:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-10-21 10:58:10
+ * @LastEditTime: 2024-11-19 13:28:20
  */
 
 //轮播图接口
@@ -25,11 +25,11 @@ export const fetcSystemIntro = async (page = 1, limit = 10, sort = 'addtime', or
     }
 };
 // 公告
-export const fetchNewsList = async (page = 1, limit = 10, sort = 'addtime', order = 'desc') => {
+export const fetchNewsList = async (params, page, limit, sort = 'addtime', order = 'desc') => {
     try {
-        const response = await get(API_ENDPOINTS.newsAPI, { page, limit, sort, order });
-        // console.log(response.data.list)
-        return response.data.list
+        const response = await get(API_ENDPOINTS.newsAPI, { ...params, page, limit, sort, order });
+        // console.log(response.data)
+        return response.data
     } catch (error) {
         console.error('Error fetching carousel images:', error);
         throw error; // 抛出错误以供调用者处理

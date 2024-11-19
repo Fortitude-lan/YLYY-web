@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-12 22:36:06
+ * @LastEditTime: 2024-11-19 13:27:28
 -->
 
 <template>
@@ -32,8 +32,8 @@
     </div>
     <!-- 选择器 -->
     <el-form ref="formRef" :model="form" label-width="auto" class="form">
-      <el-form-item label="出发地" prop="chufadi">
-        <el-input v-model="form.chufadi" />
+      <el-form-item label="关键词" prop="title">
+        <el-input v-model="form.title" />
       </el-form-item>
       <el-form-item class="form-btns">
         <el-button type="primary" @click="onSubmit(formRef)">查询</el-button>
@@ -76,44 +76,72 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row style="margin: 30px 0">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :current-page="pagination.currentPage"
+        :page-size="pagination.pageSize"
+        :page-count="pagination.totalPage"
+        @current-change="handlePageChange"
+        @size-change="handleSizeChange"
+      />
+    </el-row>
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { fetchNewsList } from "@/services/homeServices";
+
+// 分页状态
+const pagination = reactive({
+  currentPage: 1, // 当前页码
+  pageSize: 10, // 每页条数
+  totalPage: 0, // 总页数，从接口返回
+});
 // 响应式数据
 const newsLIst = ref({});
+
+const formRef = ref();
+const form = reactive({
+  title: "",
+});
+// 构建查询参数
+const buildQueryParams = () => {
+  const query = {};
+  if (form.title) {
+    query.title = `%${form.title}%`;
+  }
+  return query;
+};
 
 // 异步获取数据
 const fetchData = async () => {
   try {
-    newsLIst.value = await fetchNewsList();
+    // 获取信息，包含分页
+    const query = buildQueryParams(); // 使用统一查询方法
+    const { list, totalPage, currPage } = await fetchNewsList(
+      query,
+      pagination.currentPage,
+      pagination.pageSize
+    );
+    newsLIst.value = list;
+    pagination.totalPage = totalPage || 0; // 更新总页数
+    pagination.currentPage = currPage || 1; // 更新当前页码
   } catch (error) {
     console.error("Error fetching Home Page:", error);
   }
 };
-const formRef = ref();
-const form = reactive({
-  chufadi: "",
-  mididi: "",
-});
 
 //查找
 const onSubmit = async (formEl) => {
   if (!formEl) return;
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const query = {};
-      console.log(form);
-      if (form.chufadi) {
-        query.chufadi = `%${form.chufadi}%`;
-      }
-      if (form.mudedi) {
-        query.mudedi = `%${form.mudedi}%`;
-      }
+      pagination.currentPage = 1; // 查询时重置为第一页
       // 发送请求
-      newsLIst.value = await fetchNewsList(query);
+      await fetchData();
       console.log("submit!");
     } else {
       console.log("error submit!", fields);
