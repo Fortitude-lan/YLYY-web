@@ -81,7 +81,7 @@ const routes = [
                 name: '科室导航中心',
                 show: true,
                 component: DepartmentNavigationCenter,
-                icon: IoFileTray
+                icon: IoFileTray,
             },
             {
                 path: 'locationNav',

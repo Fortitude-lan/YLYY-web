@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 16:31:37
+ * @LastEditTime: 2024-11-20 16:31:25
 -->
 
 <template>
@@ -70,7 +70,7 @@
         :lg="4"
         :xl="4"
       >
-        <el-card class="custom-card">
+        <el-card class="custom-card" @click="openDrawer(item)">
           <template #header>
             <h3>{{ item.keshimingcheng }}</h3>
           </template>
@@ -82,6 +82,7 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 分页 -->
     <el-row style="margin: 30px 0">
       <el-pagination
         background
@@ -93,12 +94,149 @@
         @size-change="handleSizeChange"
       />
     </el-row>
+    <!-- 抽屉 -->
+    <el-drawer
+      v-model="drawerVisible"
+      title="科室详情信息"
+      :direction="rtl"
+      :before-close="handleClose"
+      size="80%"
+    >
+      <div v-if="selectedItem">
+        <p><strong>科室名称:</strong> {{ selectedItem.keshimingcheng }}</p>
+        <!-- <p><strong>简介:</strong> {{ selectedItem.jianjie }}</p> -->
+
+        <div style="width: 200px; height: 200px">
+          <el-carousel indicator-position="none" height="200px">
+            <el-carousel-item
+              v-for="(image, index) in selectedItem.tupian.split(',')"
+              :key="index"
+            >
+              <img
+                :src="`${baseUrl}${image}`"
+                style="width: 200px; height: 200px; object-fit: cover"
+              />
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <!-- 信息表 -->
+        <el-form ref="formRef" :model="ksxxInfo" class="form-layout">
+          <div class="tt">
+            <el-button @click.prevent="onSubmit(formRef)" class="edit-button"
+              >挂号</el-button
+            >
+          </div>
+          <div class="form-row">
+            <!-- <el-form-item label="挂号编号" class="form-item">
+              <el-input
+                v-model="ksxxInfo.guahaobianhao"
+                placeholder="挂号编号"
+                required
+                disabled
+              /> </el-form-item
+            > -->
+            <el-form-item label="科室号 " class="form-item">
+              <el-input
+                v-model="ksxxInfo.keshihao"
+                placeholder="科室号"
+                required
+                disabled
+              />
+            </el-form-item>
+            <el-form-item label="科室分类" class="form-item">
+              <el-input
+                v-model="ksxxInfo.keshifenlei"
+                placeholder="科室分类"
+                required
+                disabled
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item label="科室地址" class="form-item">
+              <el-input
+                v-model="ksxxInfo.keshidizhi"
+                placeholder="科室地址"
+                required
+                disabled
+              />
+            </el-form-item>
+            <el-form-item label="可挂号数" class="form-item">
+              <el-input
+                v-model="ksxxInfo.renshu"
+                placeholder="可挂号数"
+                required
+                disabled
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item label="坐诊时间" class="form-item">
+              <el-input
+                v-model="ksxxInfo.zuozhenshijian"
+                placeholder="坐诊时间"
+                required
+                disabled
+              />
+            </el-form-item>
+            <el-form-item label="挂号费用" class="form-item">
+              <el-input
+                v-model="ksxxInfo.jine"
+                placeholder="挂号费用"
+                required
+                disabled
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item label="医生工号" class="form-item">
+              <el-input
+                v-model="ksxxInfo.yishenggonghao"
+                placeholder="医生工号"
+                required
+                disabled
+              />
+            </el-form-item>
+            <el-form-item label="医生姓名" class="form-item">
+              <el-input
+                v-model="ksxxInfo.yishengxingming"
+                placeholder="医生姓名"
+                required
+                disabled
+              />
+            </el-form-item>
+          </div>
+          <div class="form-row">
+            <el-form-item label="医生职位" class="form-item">
+              <el-input
+                v-model="ksxxInfo.zhiwei"
+                placeholder="医生职位"
+                required
+                disabled
+              />
+            </el-form-item>
+            <el-form-item label="医生姓名" class="form-item">
+              <el-input
+                v-model="ksxxInfo.yishengxingming"
+                placeholder="医生姓名"
+                required
+                disabled
+              />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
-import { fetcKeshifenlei, fetchKeshiList } from "@/services/departServices";
+import {
+  fetcKeshifenlei,
+  fetchKeshiInfo,
+  fetchKeshiList,
+} from "@/services/departServices";
 import { baseUrl } from "@/utils/util";
 
 // 分页状态
@@ -107,10 +245,25 @@ const pagination = reactive({
   pageSize: 10, // 每页条数
   totalPage: 0, // 总页数，从接口返回
 });
+// 控制 el-drawer 的显示状态
+const drawerVisible = ref(false);
+// 存储当前选中的项
+const selectedItem = ref(null);
+// 打开详情方法
+const openDrawer = async (item) => {
+  console.log("ssss", item);
+  selectedItem.value = item;
+  const info = await fetchKeshiInfo(item.id);
+  ksxxInfo.value = info;
 
+  localStorage.setItem("crossTable", `keshixinxi`);
+  localStorage.setItem("crossObj", JSON.stringify(item));
+  drawerVisible.value = true;
+};
 // 响应式数据
 const ksflList = ref({});
 const ksxxList = ref({});
+const ksxxInfo = ref({});
 
 const formRef = ref();
 const form = reactive({
@@ -139,7 +292,7 @@ const buildQueryParams = () => {
 // 异步获取数据
 const fetchData = async () => {
   try {
-    ksflLisst.value = await fetcKeshifenlei();
+    ksflList.value = await fetcKeshifenlei();
     ksflList.value.unshift("全部");
     // 获取科室信息，包含分页
     const query = buildQueryParams(); // 使用统一查询方法
@@ -185,6 +338,7 @@ const handleSizeChange = async (size) => {
   pagination.currentPage = 1; // 重置为第一页
   await fetchData();
 };
+
 // 在组件挂载时调用 fetchData
 onMounted(fetchData);
 </script>
@@ -207,6 +361,7 @@ onMounted(fetchData);
     display: flex;
   }
 }
+
 .custom-card {
   cursor: pointer;
   height: 280px; /* 固定卡片高度 */
@@ -242,6 +397,19 @@ onMounted(fetchData);
   &:hover {
     transform: translateY(-5px);
     transition: transform 0.5s ease;
+  }
+}
+
+.edit-button {
+  margin: 10px 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.form-layout {
+  :deep(.el-form-item__label) {
+    min-width: 80px;
   }
 }
 </style>

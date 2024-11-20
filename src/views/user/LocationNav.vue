@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 13:22:47
+ * @LastEditTime: 2024-11-20 16:56:29
 -->
 
 <template>
@@ -56,7 +56,7 @@
         :lg="6"
         :xl="6"
       >
-        <el-card class="custom-card">
+        <el-card class="custom-card" @click="openDrawer(item)">
           <template #header>
             <h3>{{ item.chufadi }}</h3>
           </template>
@@ -80,12 +80,50 @@
         @size-change="handleSizeChange"
       />
     </el-row>
+    <!-- 抽屉 -->
+    <el-drawer
+      v-model="drawerVisible"
+      title="导航信息"
+      :direction="rtl"
+      :before-close="handleClose"
+      size="80%"
+    >
+      <div v-if="selectedItem">
+        <!-- <p><strong>出发地:</strong> {{ selectedItem.chufadi }}</p> -->
+        <el-descriptions title="">
+          <el-descriptions-item label="出发地:">{{
+            selectedItem.chufadi
+          }}</el-descriptions-item>
+          <el-descriptions-item label="目的地:">{{
+            selectedItem.mudedi
+          }}</el-descriptions-item>
+          <el-descriptions-item label="交通方式">{{
+            selectedItem.jiaotongfangshi
+          }}</el-descriptions-item>
+          <el-descriptions-item label="用时">
+            <el-tag size="small">{{ selectedItem.yongshi }}</el-tag>
+          </el-descriptions-item>
+        </el-descriptions>
+        <!-- <p><strong>简介:</strong> {{ selectedItem.jianjie }}</p> -->
+        <el-carousel indicator-position="none" height="300px">
+          <el-carousel-item
+            v-for="(image, index) in selectedItem.luxiantu.split(',')"
+            :key="index"
+          >
+            <img
+              :src="`${baseUrl}${image}`"
+              style="width: 100%; height: 300px; object-fit: cover"
+            />
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
-import { fetchDaohangList } from "@/services/departServices";
+import { fetchDaohangList, fetchDaohangInfo } from "@/services/departServices";
 import { baseUrl } from "@/utils/util";
 
 // 分页状态
@@ -94,14 +132,31 @@ const pagination = reactive({
   pageSize: 10, // 每页条数
   totalPage: 0, // 总页数，从接口返回
 });
+// 控制 el-drawer 的显示状态
+const drawerVisible = ref(false);
+// 存储当前选中的项
+const selectedItem = ref(null);
+
 // 响应式数据
 const dhList = ref({});
+const dhInfo = ref({});
 
 const formRef = ref();
 const form = reactive({
   chufadi: "",
   mudedi: "",
 });
+
+// 打开详情方法
+const openDrawer = async (item) => {
+  console.log("ssss", item);
+  selectedItem.value = item;
+  const info = await fetchDaohangInfo(item.id);
+  dhInfo.value = info;
+
+  drawerVisible.value = true;
+};
+
 // 构建查询参数
 const buildQueryParams = () => {
   const query = {};

@@ -2,6 +2,8 @@
   <div>
     <header class="header">
       <div class="logo">LOGO</div>
+      <!-- 登录 -->
+
       <div>
         <div
           v-if="isLoggedIn"
@@ -14,7 +16,9 @@
                 :size="35"
                 :style="{ background: '#1e62b9' }"
               />
-              <span :style="{ marginLeft: '10px' }">{{ username }}</span>
+              <span :style="{ marginLeft: '10px', fontWeight: 'bold' }"
+                >欢迎: {{ username }}</span
+              >
             </div>
             <template #dropdown>
               <el-dropdown-menu>
@@ -390,6 +394,7 @@ onMounted(() => {
   align-items: center;
   list-style: none;
   height: 40px;
+  mergin: 0;
   background: url(https://codegen.caihongy.cn/20221027/4058b35f34564533adc258a0075041ed.png)
     repeat-x;
 }
