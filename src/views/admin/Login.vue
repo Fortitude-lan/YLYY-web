@@ -100,20 +100,6 @@
           </div>
           <div class="form-row">
             <el-form-item label="上传照片" class="form-item" prop="zhaopian">
-              <!-- <el-upload
-                class="upload-demo"
-                drag
-                :action="`${baseUrl}/file/upload`"
-                :headers="headers"
-                :file-list="fileList"
-                multiple
-                show-file-list
-                :on-success="handleUpdateImage"
-                :on-remove="handleRemoveImage"
-              >
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">点击上传</div>
-              </el-upload> -->
               <el-upload
                 v-model:file-list="fileList"
                 :action="`${baseUrl}/file/upload`"
@@ -276,8 +262,6 @@ const handleSignUp = (formEl) => {
   if (!formSignupRef) return; // 处理注册逻辑
   formEl.validate(async (valid) => {
     if (valid) {
-      console.log(signupValidateForm);
-      console.log(imgUrl.value.join(","));
       const params = {
         ...signupValidateForm,
         zhaopian: imgUrl.value.join(","),

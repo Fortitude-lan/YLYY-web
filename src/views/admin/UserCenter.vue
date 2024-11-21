@@ -39,7 +39,7 @@
 <script setup>
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { getSession, updatePwdService } from "@/services/backServices";
+import { getSession, updateYSService } from "@/services/backServices";
 
 const passwordForm = ref({
   oldPassword: "",
@@ -85,7 +85,7 @@ const submitForm = () => {
           mima: passwordForm.value.mima,
           password: passwordForm.value.password,
         };
-        const res = await updatePwdService(params);
+        const res = await updateYSService(params);
         if (res == 0) {
           ElMessage({
             message: "修改成功",

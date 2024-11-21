@@ -61,11 +61,11 @@ export const getSession = async (role) => {
     }
 };
 //修改密码
-export const updatePwdService = async (params) => {
+export const updateYSService = async (params) => {
     try {
         const time = new Date().getTime()
         console.log(params)
-        const res = await post(API_ENDPOINTS.pwdUpdateAPI, { ...params, addtime: time });
+        const res = await post(API_ENDPOINTS.ysUpdateAPI, { ...params, addtime: time });
         return res.code
 
     } catch (error) {
