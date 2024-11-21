@@ -27,7 +27,7 @@ import Login from '@/views/admin/Login.vue'
 import HomeBack from '@/views/admin/Home.vue'
 import UserCenter from '@/views/admin/UserCenter.vue'
 import UserInfo from '@/views/admin/UserInfo.vue'
-
+import DepManag from '@/views/admin/DepManag.vue'
 
 /* ***********后台 end************ */
 
@@ -148,8 +148,14 @@ const routes = [
                 component: UserInfo,
                 icon: ''
             }]
+        },
+        {
+            path: 'depMa',
+            name: '科室管理',
+            show: true,
+            component: DepManag,
+            icon: IoFileTray,
         }
-
             // {
             //     path: '/updatePassword',
             //     name: '修改密码',

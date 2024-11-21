@@ -90,3 +90,18 @@ export const signUpService = async (params) => {
         throw error; // 抛出错误以供调用者处理
     }
 };
+
+// 科室信息
+export const fetchKeshiPage = async (params, page, limit) => {
+    try {
+        const response = await get(API_ENDPOINTS.keshixinxiPageAPI, {
+            ...params, page, limit, sort: 'id',
+            order: 'desc'
+        });
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
