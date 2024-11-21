@@ -23,6 +23,7 @@ import UserCen from '@/views/user/UserCen.vue';
 /* ***********前台 end************ */
 
 /* ***********后台 start************ */
+import Login from '@/views/admin/Login.vue'
 import HomeBack from '@/views/admin/Home.vue'
 import UserCenter from '@/views/admin/UserCenter.vue'
 import UserInfo from '@/views/admin/UserInfo.vue'
@@ -222,12 +223,13 @@ const routes = [
             // }
         ]
     },
-    // {
-    //     path: '/login',
-    //     name: 'login',
-    //     component: Login,
-    //     meta: { icon: '', title: 'login' }
-    // },
+    {
+        path: '/login',
+        name: 'login',
+        component: Login,
+        show: true,
+        icon: IoFileTray,
+    },
     // {
     //     path: '/register',
     //     name: 'register',
