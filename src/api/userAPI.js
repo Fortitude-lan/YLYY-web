@@ -22,5 +22,7 @@ export const API_ENDPOINTS = {
   userInfoAPI: '/yonghu/session',//用户信息
   userUpdateAPI: '/yonghu/update',//用户信息修改
   upload: '/file/upload',//用户信息修改
+  pwdUpdateAPI: 'yisheng/update',//医生改密码
+  signUpYSAPI:'yisheng/register',//医生注册
   // 可以在这里继续添加其他接口路径
 };

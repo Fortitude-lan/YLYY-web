@@ -121,14 +121,14 @@
             <div class="form-row">
               <el-form-item label="账号" class="form-item">
                 <el-input
-                  v-model="signupValidateForm.username"
+                  v-model="signupValidateForm.zhanghao"
                   placeholder="账号"
                   required
                 />
               </el-form-item>
               <el-form-item label="电话号码" class="form-item">
                 <el-input
-                  v-model="signupValidateForm.phone"
+                  v-model="signupValidateForm.lianxidianhua"
                   placeholder="电话"
                   required
                 />
@@ -138,7 +138,7 @@
               <el-form-item label="密码" class="form-item">
                 <el-input
                   type="password"
-                  v-model="signupValidateForm.password"
+                  v-model="signupValidateForm.mima"
                   placeholder="密码"
                   required
                 />
@@ -146,7 +146,7 @@
               <el-form-item label="确认密码" class="form-item">
                 <el-input
                   type="password"
-                  v-model="signupValidateForm.confirmPassword"
+                  v-model="signupValidateForm.mima2"
                   placeholder="确认密码"
                   required
                 />
@@ -155,54 +155,69 @@
             <div class="form-row">
               <el-form-item label="姓名" class="form-item">
                 <el-input
-                  v-model="signupValidateForm.name"
+                  v-model="signupValidateForm.xingming"
                   placeholder="姓名"
                   required
                 />
               </el-form-item>
               <el-form-item label="就诊卡号" class="form-item">
                 <el-input
-                  v-model="signupValidateForm.cardNumber"
+                  v-model="signupValidateForm.jiuzhenkahao"
                   placeholder="就诊卡号"
                   required
                 />
               </el-form-item>
             </div>
             <div class="form-row">
-              <div class="form-item">
-                <el-form-item label="性别">
-                  <el-select
-                    v-model="signupValidateForm.gender"
-                    placeholder="选择性别"
-                    required
-                  >
-                    <el-option label="男" value="male"></el-option>
-                    <el-option label="女" value="female"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="年龄">
-                  <el-input
-                    v-model="signupValidateForm.age"
-                    type="number"
-                    placeholder="请输入年龄"
-                    required
-                  ></el-input>
-                </el-form-item>
-              </div>
+              <el-form-item label="年龄" class="form-item">
+                <el-input
+                  v-model="signupValidateForm.nianling"
+                  type="number"
+                  placeholder="请输入年龄"
+                  required
+                />
+              </el-form-item>
+              <el-form-item label="性别" class="form-item">
+                <el-select
+                  :style="{ width: '100px' }"
+                  v-model="signupValidateForm.gender"
+                  placeholder="选择性别"
+                  required
+                >
+                  <el-option label="男" value="男"></el-option>
+                  <el-option label="女" value="女"></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+            <div class="form-row">
               <el-form-item label="上传照片" class="form-item">
                 <el-upload
                   class="upload-demo"
                   drag
-                  action="/upload"
-                  show-file-list
-                  v-model="signupValidateForm.photo"
+                  :action="`${baseUrl}/file/upload`"
+                  :headers="headers"
+                  :show-file-list="false"
+                  :on-success="handleUpdateImage"
                 >
+                  <img
+                    :style="{
+                      width: '100px',
+                      height: '100px',
+                    }"
+                    v-if="signupValidateForm.zhaopian"
+                    :src="`${baseUrl}${signupValidateForm.zhaopian}`"
+                    class="avatar"
+                  />
                   <i class="el-icon-upload"></i>
-                  <div class="el-upload__text">点击上传</div>
+                  <div
+                    v-if="signupValidateForm.zhaopian == null"
+                    class="el-upload__text"
+                  >
+                    点击上传
+                  </div>
                 </el-upload>
               </el-form-item>
             </div>
-
             <el-button
               type="primary"
               @click.prevent="handleSignUp(formSignupRef)"
@@ -265,20 +280,20 @@ const route = useRoute();
 const isActive = (path) => {
   return route.path === path; // 判断当前路由是否与链接路径相同
 };
-
 console.log(frontendMenuList);
 
 const formSignupRef = ref();
 const signupValidateForm = reactive({
-  username: "",
-  phone: "",
-  password: "",
-  confirmPassword: "",
-  name: "",
-  cardNumber: "",
-  gender: "",
-  age: "",
-  photo: null,
+  zhanghao: "",
+  xingming: "",
+  lianxidianhua: "",
+  mima: "",
+  mima2: "",
+  xingbie: "",
+  nianling: "",
+  zhaopian: null,
+  jiuzhenkahao: new Date().getTime(),
+  jine: 0,
 });
 const formSigninRef = ref();
 const signinValidateForm = reactive({
@@ -347,6 +362,20 @@ const checkLoginStatus = () => {
       username: localStorage.getItem("adminName"),
     });
   }
+};
+// 上传图片成功后回调
+const handleUpdateImage = (response) => {
+  // 假设后端返回图片的URL
+  const imageUrl = `upload/${response.file}`; // 修改为实际的返回路径字段
+  console.log(imageUrl);
+
+  signupValidateForm.zhaopian = imageUrl; // 更新表单中的图片路径
+
+  // 提示用户上传成功
+  ElMessage({
+    message: "图片上传成功",
+    type: "success",
+  });
 };
 // 在组件挂载时调用
 onMounted(() => {
@@ -482,7 +511,7 @@ onMounted(() => {
     background: #255da7;
     font-size: 1em;
     font-weight: bold;
-    margin-top: 30px;
+    margin-top: 10px;
     outline: none;
     border: none;
     border-radius: 5px;
@@ -538,7 +567,7 @@ onMounted(() => {
   }
 
   #chk:checked ~ .signup {
-    transform: translateY(-580px);
+    transform: translateY(-590px);
   }
   #chk:checked ~ .signup label {
     transform: scale(1);
@@ -553,6 +582,9 @@ onMounted(() => {
   .upload-demo {
     width: 100px;
     height: 100px;
+    :deep(.el-upload-dragger) {
+      padding: 0;
+    }
   }
 }
 

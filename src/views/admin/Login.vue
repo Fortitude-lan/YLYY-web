@@ -43,17 +43,17 @@
         >
           <label for="chk" aria-hidden="true">注册</label>
           <div class="form-row">
-            <el-form-item label="账号" class="form-item">
+            <el-form-item label="工号" class="form-item">
               <el-input
-                v-model="signupValidateForm.username"
-                placeholder="账号"
+                v-model="signupValidateForm.yishenggonghao"
+                placeholder="工号"
                 required
               />
             </el-form-item>
-            <el-form-item label="电话号码" class="form-item">
+            <el-form-item label="姓名" class="form-item">
               <el-input
-                v-model="signupValidateForm.phone"
-                placeholder="电话"
+                v-model="signupValidateForm.yishengxingming"
+                placeholder="姓名"
                 required
               />
             </el-form-item>
@@ -62,7 +62,7 @@
             <el-form-item label="密码" class="form-item">
               <el-input
                 type="password"
-                v-model="signupValidateForm.password"
+                v-model="signupValidateForm.mima"
                 placeholder="密码"
                 required
               />
@@ -70,60 +70,64 @@
             <el-form-item label="确认密码" class="form-item">
               <el-input
                 type="password"
-                v-model="signupValidateForm.confirmPassword"
+                v-model="signupValidateForm.mima2"
                 placeholder="确认密码"
                 required
               />
             </el-form-item>
           </div>
           <div class="form-row">
-            <el-form-item label="姓名" class="form-item">
+            <el-form-item label="职位" class="form-item">
               <el-input
-                v-model="signupValidateForm.name"
-                placeholder="姓名"
+                v-model="signupValidateForm.zhiwei"
+                placeholder="职位"
                 required
               />
             </el-form-item>
-            <el-form-item label="就诊卡号" class="form-item">
-              <el-input
-                v-model="signupValidateForm.cardNumber"
-                placeholder="就诊卡号"
+            <el-form-item label="性别" class="form-item">
+              <el-select
+                :style="{
+                  width: '120px',
+                }"
+                v-model="signupValidateForm.xingbie"
+                placeholder="选择性别"
                 required
-              />
+              >
+                <el-option label="男" value="男"></el-option>
+                <el-option label="女" value="女"></el-option>
+              </el-select>
             </el-form-item>
           </div>
           <div class="form-row">
-            <div class="form-item">
-              <el-form-item label="性别">
-                <el-select
-                  v-model="signupValidateForm.gender"
-                  placeholder="选择性别"
-                  required
-                >
-                  <el-option label="男" value="male"></el-option>
-                  <el-option label="女" value="female"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="年龄">
-                <el-input
-                  v-model="signupValidateForm.age"
-                  type="number"
-                  placeholder="请输入年龄"
-                  required
-                ></el-input>
-              </el-form-item>
-            </div>
-            <el-form-item label="上传照片" class="form-item">
-              <el-upload
+            <el-form-item label="上传照片" class="form-item" prop="zhaopian">
+              <!-- <el-upload
                 class="upload-demo"
                 drag
-                action="/upload"
+                :action="`${baseUrl}/file/upload`"
+                :headers="headers"
+                :file-list="fileList"
+                multiple
                 show-file-list
-                v-model="signupValidateForm.photo"
+                :on-success="handleUpdateImage"
+                :on-remove="handleRemoveImage"
               >
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">点击上传</div>
+              </el-upload> -->
+              <el-upload
+                v-model:file-list="fileList"
+                :action="`${baseUrl}/file/upload`"
+                list-type="picture-card"
+                :on-success="handleUploadSuccess"
+                :on-remove="handleRemove"
+                :auto-upload="true"
+                multiple
+              >
+                <CiCirclePlus size="20" />
               </el-upload>
+              <el-dialog v-model="dialogVisible">
+                <img w-full :src="dialogImageUrl" alt="Preview Image" />
+              </el-dialog>
             </el-form-item>
           </div>
 
@@ -137,29 +141,30 @@
 </template>
 
 <script setup>
-import { getFrontendRoutes } from "@/router/index";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-
+import { baseUrl } from "@/utils/util";
+import { CiCirclePlus } from "vue3-icons/ci";
 import { ElMessage } from "element-plus";
-import { loginService, getSession } from "@/services/backServices";
+import { loginService, signUpService } from "@/services/backServices";
 import { reactive, ref, onMounted, computed } from "vue";
 // 获取路由
 const store = useStore();
 const router = useRouter();
+// 上传文件列表
+const fileList = ref([]);
+const imgUrl = ref([]);
 
 // 注册
 const formSignupRef = ref();
 const signupValidateForm = reactive({
-  username: "",
-  phone: "",
-  password: "",
-  confirmPassword: "",
-  name: "",
-  cardNumber: "",
-  gender: "",
-  age: "",
-  photo: null,
+  yishenggonghao: "",
+  yishengxingming: "",
+  mima: "",
+  mima2: "",
+  zhiwei: "",
+  xingbie: "",
+  zhaopian: null,
 });
 // 登录
 const formSigninRef = ref();
@@ -253,7 +258,7 @@ const handleLogin = (formEl) => {
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve();
-            console.log('sssss')
+            console.log("sssss");
             // 跳转到 /back 页面
             router.push({ path: "/back" });
           }, 100); // 适当延迟，例如100毫秒
@@ -269,25 +274,32 @@ const handleLogin = (formEl) => {
 // 注册处理
 const handleSignUp = (formEl) => {
   if (!formSignupRef) return; // 处理注册逻辑
-  formEl.validate((valid) => {
+  formEl.validate(async (valid) => {
     if (valid) {
-      console.log(signupValidateForm.username);
+      console.log(signupValidateForm);
+      console.log(imgUrl.value.join(","));
+      const params = {
+        ...signupValidateForm,
+        zhaopian: imgUrl.value.join(","),
+      };
+      const res = await signUpService(params);
+      if (res == 0) {
+        ElMessage({
+          message: `${yishenggonghao} 注册成功`,
+          type: "success",
+        });
+      } else {
+        ElMessage({
+          message: "注册失败",
+          type: "error",
+        });
+      }
     } else {
       console.log("error submit!");
     }
   });
 };
-// 退出登录
-const handleLogout = () => {
-  // 退出登录逻辑
-  localStorage.clear();
-  // 更新 Vuex 的登录状态
-  store.commit("SET_LOGIN", { isLoggedIn: false, username: "" });
-  ElMessage({
-    message: "退出成功",
-    type: "success",
-  });
-};
+
 // 检查登录状态
 const checkLoginStatus = () => {
   const role = localStorage.getItem("role");
@@ -297,6 +309,19 @@ const checkLoginStatus = () => {
       username: localStorage.getItem("adminName"),
     });
   }
+};
+
+// 上传成功回调
+const handleUploadSuccess = (response, file, fileListRef) => {
+  // 假设后端返回的是文件的URL
+  imgUrl.value.push(`upload/${response.file}`); // 修改为实际的返回路径字段
+  console.log("上传成功的图片URL:", imgUrl);
+
+  ElMessage.success("图片上传成功");
+};
+
+const handleRemove = (uploadFile, uploadFiles) => {
+  console.log(uploadFile, uploadFiles);
 };
 // 在组件挂载时调用
 onMounted(() => {
@@ -407,6 +432,11 @@ onMounted(() => {
     :deep(.el-input) {
       width: 90%;
     }
+    :deep(.el-upload--picture-card),
+    :deep(.el-upload-list__item) {
+      width: 100px;
+      height: 100px;
+    }
   }
   .signin {
     position: relative;
@@ -437,6 +467,7 @@ onMounted(() => {
 
   #chk:checked ~ .signup {
     transform: translateY(-580px);
+    overflow-y: scroll;
   }
   #chk:checked ~ .signup label {
     transform: scale(1);

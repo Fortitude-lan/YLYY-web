@@ -60,3 +60,33 @@ export const getSession = async (role) => {
         console.error("Error in getSession:", error);
     }
 };
+//修改密码
+export const updatePwdService = async (params) => {
+    try {
+        const time = new Date().getTime()
+        console.log(params)
+        const res = await post(API_ENDPOINTS.pwdUpdateAPI, { ...params, addtime: time });
+        return res.code
+
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
+
+//注册医生
+
+export const signUpService = async (params) => {
+    try {
+        const res = await post(API_ENDPOINTS.signUpYSAPI, {
+            ...params,
+            jiuzhenkahao: new Date().getTime(),
+            jine: 0,
+        });
+        return res.code
+
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};

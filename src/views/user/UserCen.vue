@@ -35,9 +35,11 @@
                 required
               >
                 <template #append>
-                  <component :is="isPasswordVisible ? PiEyeBold :
-                  PiEyeClosed " @click="togglePasswordVisibility"
-                  style="cursor: pointer; font-size: 20px;" />
+                  <component
+                    :is="isPasswordVisible ? PiEyeBold : PiEyeClosed"
+                    @click="togglePasswordVisibility"
+                    style="cursor: pointer; font-size: 20px"
+                  />
                 </template>
               </el-input>
             </el-form-item>
@@ -136,7 +138,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { PiEyeBold, PiEyeClosed  } from "vue3-icons/pi";
+import { PiEyeBold, PiEyeClosed } from "vue3-icons/pi";
 import { getSession, fetchUpdateUserInfo } from "@/services/headerServices";
 import { baseUrl } from "@/utils/util";
 // 响应式数据
