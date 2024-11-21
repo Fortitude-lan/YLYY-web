@@ -26,8 +26,22 @@
       <el-button @click="resetForm(formRef)">重置</el-button>
     </el-form-item>
   </el-form>
+  <div class="noraml-btn">
+    <button>新增</button>
+    <button>删除</button>
+  </div>
   <!-- 动态渲染表头 -->
-  <el-table :data="tableData" style="width: 100%" class="table">
+  <el-table
+    :data="tableData"
+    @selection-change="handleSelectionChange"
+    :row-key="(row) => row.id"
+    ref="tableRef"
+    style="width: 100%"
+    class="table"
+  >
+    <!-- 多选框 -->
+    <el-table-column type="selection" width="55"></el-table-column>
+
     <!-- 动态渲染表头 -->
     <el-table-column
       v-for="(column, index) in columns"
@@ -70,16 +84,10 @@
       </template>
     </el-table-column>
     <!-- 操作列 -->
-    <el-table-column fixed="right" label="操作" min-width="80">
+    <el-table-column fixed="right" label="操作" min-width="120">
       <template #default="scope">
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click.prevent="deleteRow(scope.$index)"
-        >
-          详情
-        </el-button>
+        <el-button link type="primary" size="small"> 详情 </el-button>
+        <el-button link type="primary" size="small"> 删除 </el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -109,6 +117,7 @@ const pagination = reactive({
   pageSize: 10, // 每页条数
   totalPage: 0, // 总页数，从接口返回
 });
+
 const ksflList = ref({});
 const formRef = ref();
 const form = reactive({
@@ -118,6 +127,8 @@ const form = reactive({
   yishengxingming: "",
 });
 
+// 选中的行
+const selectedRows = ref([]);
 // 表头数据
 const tableData = ref([]);
 // 自定义表头
@@ -174,6 +185,16 @@ const fetchData = async () => {
     console.error("Failed to fetch table columns:", error);
   }
 };
+// 监听选中行变化
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows;
+  console.log("当前选中的行:", selectedRows.value);
+};
+
+// 输出选中数据
+const handleSelectedRows = () => {
+  console.log("选中的行数据:", selectedRows.value);
+};
 
 //查找
 const onSubmit = async (formEl) => {
@@ -211,7 +232,7 @@ onMounted(fetchData);
 
 <style lang="scss" scoped>
 .table {
-  height: 430px;
+  height: 400px;
 }
 .form {
   margin: 10px 0;
@@ -226,5 +247,8 @@ onMounted(fetchData);
     min-width: 150px;
     display: flex;
   }
+}
+.noraml-btn button {
+  margin-right: 10px;
 }
 </style>
