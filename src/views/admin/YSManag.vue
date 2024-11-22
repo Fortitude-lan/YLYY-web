@@ -1,10 +1,12 @@
 <template>
   <!-- 选择器 -->
   <el-form ref="formRef" :model="form" label-width="auto" class="form">
-    <el-form-item label="科室分类" prop="keshifenlei">
-      <el-input v-model="form.keshifenlei" />
+    <el-form-item label="医生工号" prop="yishenggonghao">
+      <el-input v-model="form.yishenggonghao" />
     </el-form-item>
-
+    <el-form-item label="医生姓名" prop="yishengxingming">
+      <el-input v-model="form.yishengxingming" />
+    </el-form-item>
     <el-form-item class="form-btns">
       <el-button type="primary" @click="onSubmit(formRef)">查询</el-button>
       <el-button @click="resetForm(formRef)">重置</el-button>
@@ -46,6 +48,20 @@
             }}
             <!-- 显示当前列的值，并显示当前行号 -->
           </span>
+          <span v-if="column.prop === 'zhaopian'">
+            <div
+              v-for="(img, imgIndex) in scope.row[column.prop].split(',')"
+              :key="imgIndex"
+              style="display: inline-block; margin-right: 8px"
+            >
+              <!-- {{ baseUrl }}/{{ img }} -->
+              <img
+                :src="`${baseUrl}/${img}`"
+                alt="图片"
+                style="width: 50px; height: 50px; object-fit: cover"
+              />
+            </div>
+          </span>
           <!-- 其他列默认渲染 -->
           <span v-else>
             {{ scope.row[column.prop] }}
@@ -54,9 +70,9 @@
       </template>
     </el-table-column>
     <!-- 操作列 -->
-    <el-table-column label="操作" min-width="120">
+    <el-table-column fixed="right" label="操作" min-width="120">
       <template #default="scope">
-        <el-button link type="primary" size="small"> 修改 </el-button>
+        <el-button link type="primary" size="small"> 详情 </el-button>
         <el-popconfirm title="确定要删除吗?">
           <template #reference>
             <el-button link type="danger" size="small"> 删除 </el-button>
@@ -87,12 +103,72 @@
       @size-change="handleSizeChange"
     />
   </el-row>
+
   <!-- 弹窗 add -->
   <el-dialog v-model="addFormVisible" title="新增" width="500">
-    <el-form ref="addformRef" :model="addform">
-      <el-form-item label="科室名称" :label-width="formLabelWidth">
-        <el-input v-model="addform.keshifenlei" autocomplete="off" />
-      </el-form-item>
+    <el-form ref="addformRef" :model="addform" class="form-layout">
+      <div class="form-row">
+        <el-form-item label="工号" class="form-item">
+          <el-input
+            v-model="addform.yishenggonghao"
+            placeholder="工号"
+            required
+          />
+        </el-form-item>
+        <el-form-item label="姓名" class="form-item">
+          <el-input
+            v-model="addform.yishengxingming"
+            placeholder="姓名"
+            required
+          />
+        </el-form-item>
+      </div>
+      <div class="form-row">
+        <el-form-item label="密码" class="form-item">
+          <el-input
+            type="password"
+            v-model="addform.mima"
+            placeholder="密码"
+            required
+          />
+        </el-form-item>
+      </div>
+      <div class="form-row">
+        <el-form-item label="职位" class="form-item">
+          <el-input v-model="addform.zhiwei" placeholder="职位" required />
+        </el-form-item>
+        <el-form-item label="性别" class="form-item">
+          <el-select
+            :style="{
+              width: '120px',
+            }"
+            v-model="addform.xingbie"
+            placeholder="选择性别"
+            required
+          >
+            <el-option label="男" value="男"></el-option>
+            <el-option label="女" value="女"></el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+      <div class="form-row">
+        <el-form-item label="上传照片" class="form-item" prop="zhaopian">
+          <el-upload
+            v-model:file-list="fileList"
+            :action="`${baseUrl}/file/upload`"
+            list-type="picture-card"
+            :on-success="handleUploadSuccess"
+            :on-remove="handleRemove"
+            :auto-upload="true"
+            multiple
+          >
+            <CiCirclePlus size="20" />
+          </el-upload>
+          <el-dialog v-model="dialogVisible">
+            <img w-full :src="dialogImageUrl" alt="Preview Image" />
+          </el-dialog>
+        </el-form-item>
+      </div>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
@@ -103,17 +179,18 @@
       </div>
     </template>
   </el-dialog>
-
 </template>
 
 <script setup>
 import {
-  fetchfenleiPage,
-  fetchfenleiPageAdd,
-  keshifenleiPageDel,
+  fetchYsPageAPI,
+  fetchYsPageADDAPI,
+  fetchYsPageDelAPI,
 } from "@/services/backServices";
 import { reactive, onMounted, ref } from "vue";
+import { baseUrl } from "@/utils/util";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { CiCirclePlus } from "vue3-icons/ci";
 
 // 分页状态
 const pagination = reactive({
@@ -124,12 +201,23 @@ const pagination = reactive({
 
 const formRef = ref();
 const form = reactive({
-  keshifenlei: "",
+  yishenggonghao: "",
+  yishengxingming: "",
 });
+
+// 上传文件列表
+const fileList = ref([]);
+const imgUrl = ref([]);
 const addformRef = ref();
 const addFormVisible = ref(false);
 const addform = reactive({
-  keshimingcheng: "",
+  yishenggonghao: "",
+  yishengxingming: "",
+  mima: "",
+  mima2: "",
+  zhiwei: "",
+  xingbie: "",
+  zhaopian: null,
 });
 
 // 选中的行
@@ -139,15 +227,28 @@ const tableData = ref([]);
 // 自定义表头
 const columns = ref([
   { prop: "num", label: "序号", width: "80" },
-  { prop: "keshifenlei", label: "科室分类", width: "180" },
-  { prop: "addtime", label: "添加时间", width: "250" },
+  { prop: "yishengxingming", label: "医生姓名", width: "120" },
+  { prop: "yishenggonghao", label: "工号", width: "180" },
+  { prop: "xingbie", label: "性别", width: "100" },
+  { prop: "zhaopian", label: "照片", width: "150" },
+  { prop: "zhiwei", label: "职位", width: "120" },
+  { prop: "addtime", label: "添加时间", width: "200" },
 ]);
 
 // 构建查询参数
 const buildQueryParams = () => {
   const query = {};
-  if (form.keshifenlei) {
-    query.keshifenlei = `%${form.keshifenlei}%`;
+  if (form.keshifenlei && form.keshifenlei !== "全部") {
+    query.keshifenlei = form.keshifenlei;
+  }
+  if (form.keshihao) {
+    query.keshihao = `%${form.keshihao}%`;
+  }
+  if (form.keshimingcheng) {
+    query.keshimingcheng = `%${form.keshimingcheng}%`;
+  }
+  if (form.yishengxingming) {
+    query.yishengxingming = `%${form.yishengxingming}%`;
   }
   return query;
 };
@@ -155,14 +256,14 @@ const buildQueryParams = () => {
 const fetchData = async () => {
   try {
     const query = buildQueryParams(); // 使用统一查询方法
-    const { list, totalPage, currPage } = await fetchfenleiPage(
+
+    const { list, totalPage, currPage } = await fetchYsPageAPI(
       query,
       pagination.currentPage,
       pagination.pageSize
     );
     // 获取科室信息，包含分页
     tableData.value = list;
-    console.log(list);
     pagination.totalPage = totalPage || 0; // 更新总页数
     pagination.currentPage = currPage || 1; // 更新当前页码
   } catch (error) {
@@ -199,8 +300,11 @@ const onAddSubmit = async (formEl) => {
   await formEl.validate(async (valid, fields) => {
     if (valid) {
       console.log("submit!");
-      console.log(addform);
-      const msg = await fetchfenleiPageAdd(addform);
+      const params = {
+        ...addform,
+        zhaopian: imgUrl.value.join(","),
+      };
+      const msg = await fetchYsPageADDAPI(params);
       if (msg == 0) {
         ElMessage({
           message: "新增成功",
@@ -221,7 +325,7 @@ const onAddSubmit = async (formEl) => {
     }
   });
 };
-// del
+// del raws
 const delSubmit = () => {
   console.log("del");
   if (selectedRows.value.length <= 0) {
@@ -238,7 +342,7 @@ const delSubmit = () => {
       .then(async () => {
         const ids = selectedRows.value.map((i) => i.id);
         console.log(ids);
-        const msg = await keshifenleiPageDel(ids);
+        const msg = await fetchYsPageDelAPI(ids);
         if (msg == 0) {
           ElMessage({
             type: "success",
@@ -259,7 +363,7 @@ const delSubmit = () => {
 //del raw
 const delConfirm = async (row) => {
   console.log();
-  const msg = await keshifenleiPageDel([row.id]);
+  const msg = await fetchYsPageDelAPI([row.id]);
   if (msg == 0) {
     ElMessage({
       type: "success",
@@ -289,6 +393,19 @@ const handleSizeChange = async (size) => {
   pagination.pageSize = size;
   pagination.currentPage = 1; // 重置为第一页
   await fetchData();
+};
+
+// 上传成功回调
+const handleUploadSuccess = (response, file, fileListRef) => {
+  // 假设后端返回的是文件的URL
+  imgUrl.value.push(`upload/${response.file}`); // 修改为实际的返回路径字段
+  console.log("上传成功的图片URL:", imgUrl);
+
+  ElMessage.success("图片上传成功");
+};
+
+const handleRemove = (uploadFile, uploadFiles) => {
+  console.log(uploadFile, uploadFiles);
 };
 // 生命周期钩子，获取表头数据
 onMounted(fetchData);

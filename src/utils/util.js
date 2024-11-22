@@ -36,6 +36,13 @@ http.interceptors.request.use(
 // 响应拦截器
 http.interceptors.response.use(
     response => {
+        console.log(response.data)
+        if (response.data.code === 401) {
+            console.error('未登录，跳转到登录页');
+            // 清空本地存储
+            localStorage.clear();
+            window.location.href = '/login';
+        }
         return response.data; // 返回响应数据
     },
     error => {

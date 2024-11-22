@@ -27,9 +27,9 @@ import Login from '@/views/admin/Login.vue'
 import HomeBack from '@/views/admin/Home.vue'
 import UserCenter from '@/views/admin/UserCenter.vue'
 import UserInfo from '@/views/admin/UserInfo.vue'
+import YSManag from '@/views/admin/YSManag.vue'
 import DepManag from '@/views/admin/DepManag.vue'
 import DepSort from '@/views/admin/DepSort.vue'
-
 /* ***********后台 end************ */
 
 import NotFound from '@/views/404.vue'
@@ -149,6 +149,13 @@ const routes = [
                 component: UserInfo,
                 icon: ''
             }]
+        },
+        {
+            path: 'ys',
+            name: '医生管理',
+            show: true,
+            component: YSManag,
+            icon: IoFileTray,
         },
         {
             path: 'depMa',
