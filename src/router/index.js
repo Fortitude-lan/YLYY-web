@@ -28,6 +28,7 @@ import HomeBack from '@/views/admin/Home.vue'
 import UserCenter from '@/views/admin/UserCenter.vue'
 import UserInfo from '@/views/admin/UserInfo.vue'
 import DepManag from '@/views/admin/DepManag.vue'
+import DepSort from '@/views/admin/DepSort.vue'
 
 /* ***********后台 end************ */
 
@@ -153,8 +154,21 @@ const routes = [
             path: 'depMa',
             name: '科室管理',
             show: true,
-            component: DepManag,
             icon: IoFileTray,
+            children: [{
+                // 这里不设置值，是把main作为默认页面
+                path: 'index',
+                name: '科室信息',
+                component: DepManag,
+                icon: ''
+            },
+            {
+                path: 'sort',
+                name: '科室分类',
+                component: DepSort,
+                icon: ''
+            }
+            ]
         }
             // {
             //     path: '/updatePassword',

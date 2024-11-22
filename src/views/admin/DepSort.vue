@@ -2,33 +2,17 @@
   <!-- 选择器 -->
   <el-form ref="formRef" :model="form" label-width="auto" class="form">
     <el-form-item label="科室分类" prop="keshifenlei">
-      <el-select v-model="form.keshifenlei" :style="{ width: '180px' }">
-        <el-option
-          placeholder="请选择科室"
-          v-for="item in ksflList"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
+      <el-input v-model="form.keshifenlei" />
     </el-form-item>
-    <el-form-item label="科室号" prop="keshihao">
-      <el-input v-model="form.keshihao" />
-    </el-form-item>
-    <el-form-item label="科室名" prop="keshimingcheng">
-      <el-input v-model="form.keshimingcheng" />
-    </el-form-item>
-    <el-form-item label="医生姓名" prop="yishengxingming">
-      <el-input v-model="form.yishengxingming" />
-    </el-form-item>
+
     <el-form-item class="form-btns">
       <el-button type="primary" @click="onSubmit(formRef)">查询</el-button>
       <el-button @click="resetForm(formRef)">重置</el-button>
     </el-form-item>
   </el-form>
   <div class="noraml-btn">
-    <button>新增</button>
-    <button>删除</button>
+    <button @click="addFormVisible = true">新增</button>
+    <button @click="delSubmit()">删除</button>
   </div>
   <!-- 动态渲染表头 -->
   <el-table
@@ -62,20 +46,6 @@
             }}
             <!-- 显示当前列的值，并显示当前行号 -->
           </span>
-          <span v-if="column.prop === 'tupian'">
-            <div
-              v-for="(img, imgIndex) in scope.row[column.prop].split(',')"
-              :key="imgIndex"
-              style="display: inline-block; margin-right: 8px"
-            >
-              <!-- {{ baseUrl }}/{{ img }} -->
-              <img
-                :src="`${baseUrl}/${img}`"
-                alt="图片"
-                style="width: 50px; height: 50px; object-fit: cover"
-              />
-            </div>
-          </span>
           <!-- 其他列默认渲染 -->
           <span v-else>
             {{ scope.row[column.prop] }}
@@ -84,10 +54,24 @@
       </template>
     </el-table-column>
     <!-- 操作列 -->
-    <el-table-column fixed="right" label="操作" min-width="120">
+    <el-table-column label="操作" min-width="120">
       <template #default="scope">
-        <el-button link type="primary" size="small"> 详情 </el-button>
-        <el-button link type="primary" size="small"> 删除 </el-button>
+        <el-button link type="primary" size="small"> 修改 </el-button>
+        <el-popconfirm title="确定要删除吗?">
+          <template #reference>
+            <el-button link type="danger" size="small"> 删除 </el-button>
+          </template>
+          <template #actions="{ confirm, cancel }">
+            <el-button size="small" @click="cancel">否</el-button>
+            <el-button
+              type="danger"
+              size="small"
+              @click="delConfirm(scope.row)"
+            >
+              是
+            </el-button>
+          </template>
+        </el-popconfirm>
       </template>
     </el-table-column>
   </el-table>
@@ -103,13 +87,33 @@
       @size-change="handleSizeChange"
     />
   </el-row>
+  <!-- 弹窗 add -->
+  <el-dialog v-model="addFormVisible" title="新增" width="500">
+    <el-form ref="addformRef" :model="addform">
+      <el-form-item label="科室名称" :label-width="formLabelWidth">
+        <el-input v-model="addform.keshifenlei" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="addFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="onAddSubmit(addformRef)">
+          确定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+  <!-- 弹窗 del -->
 </template>
 
 <script setup>
-import { fetcKeshifenlei } from "@/services/departServices";
-import { fetchKeshiPage, fetchfenleiPageAdd } from "@/services/backServices";
+import {
+  fetchfenleiPage,
+  fetchfenleiPageAdd,
+  keshifenleiPageDel,
+} from "@/services/backServices";
 import { reactive, onMounted, ref } from "vue";
-import { baseUrl } from "@/utils/util";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 // 分页状态
 const pagination = reactive({
@@ -118,13 +122,14 @@ const pagination = reactive({
   totalPage: 0, // 总页数，从接口返回
 });
 
-const ksflList = ref({});
 const formRef = ref();
 const form = reactive({
-  keshifenlei: "全部",
-  keshihao: "",
+  keshifenlei: "",
+});
+const addformRef = ref();
+const addFormVisible = ref(false);
+const addform = reactive({
   keshimingcheng: "",
-  yishengxingming: "",
 });
 
 // 选中的行
@@ -134,51 +139,30 @@ const tableData = ref([]);
 // 自定义表头
 const columns = ref([
   { prop: "num", label: "序号", width: "80" },
-  { prop: "keshihao", label: "科室号", width: "150" },
-  { prop: "keshifenlei", label: "科室分类", width: "120" },
-  { prop: "keshimingcheng", label: "科室名称", width: "180" },
-  { prop: "keshidizhi", label: "科室地址", width: "200" },
-  { prop: "tupian", label: "图片", width: "300" },
-  { prop: "renshu", label: "人数", width: "100" },
-  { prop: "zuozhenshijian", label: "坐诊时间", width: "180" },
-  { prop: "jine", label: "金额", width: "120" },
-  { prop: "yishenggonghao", label: "医生工号", width: "150" },
-  { prop: "yishengxingming", label: "医生姓名", width: "150" },
-  { prop: "zhiwei", label: "职位", width: "120" },
-  { prop: "addtime", label: "添加时间", width: "200" },
+  { prop: "keshifenlei", label: "科室分类", width: "180" },
+  { prop: "addtime", label: "添加时间", width: "250" },
 ]);
 
 // 构建查询参数
 const buildQueryParams = () => {
   const query = {};
-  if (form.keshifenlei && form.keshifenlei !== "全部") {
-    query.keshifenlei = form.keshifenlei;
-  }
-  if (form.keshihao) {
-    query.keshihao = `%${form.keshihao}%`;
-  }
-  if (form.keshimingcheng) {
-    query.keshimingcheng = `%${form.keshimingcheng}%`;
-  }
-  if (form.yishengxingming) {
-    query.yishengxingming = `%${form.yishengxingming}%`;
+  if (form.keshifenlei) {
+    query.keshifenlei = `%${form.keshifenlei}%`;
   }
   return query;
 };
 //获取数据
 const fetchData = async () => {
   try {
-    ksflList.value = await fetcKeshifenlei();
-    ksflList.value.unshift("全部");
     const query = buildQueryParams(); // 使用统一查询方法
-
-    const { list, totalPage, currPage } = await fetchKeshiPage(
+    const { list, totalPage, currPage } = await fetchfenleiPage(
       query,
       pagination.currentPage,
       pagination.pageSize
     );
     // 获取科室信息，包含分页
     tableData.value = list;
+    console.log(list);
     pagination.totalPage = totalPage || 0; // 更新总页数
     pagination.currentPage = currPage || 1; // 更新当前页码
   } catch (error) {
@@ -209,7 +193,87 @@ const onSubmit = async (formEl) => {
     }
   });
 };
-
+// add
+const onAddSubmit = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      console.log("submit!");
+      console.log(addform);
+      const msg = await fetchfenleiPageAdd(addform);
+      if (msg == 0) {
+        ElMessage({
+          message: "新增成功",
+          type: "success",
+        });
+        //
+        addFormVisible.value = false;
+        //更新
+        await fetchData();
+      } else {
+        ElMessage({
+          message: "新增失败",
+          type: "error",
+        });
+      }
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+// del
+const delSubmit = () => {
+  console.log("del");
+  if (selectedRows.value.length <= 0) {
+    ElMessage({
+      message: "至少选择一行",
+      type: "warning",
+    });
+  } else {
+    ElMessageBox.confirm("确认删除选中行?", "删除", {
+      confirmButtonText: "删除",
+      cancelButtonText: "取消",
+      type: "warning",
+    })
+      .then(async () => {
+        const ids = selectedRows.value.map((i) => i.id);
+        console.log(ids);
+        const msg = await keshifenleiPageDel(ids);
+        if (msg == 0) {
+          ElMessage({
+            type: "success",
+            message: "删除成功",
+          });
+          //刷新
+          await fetchData();
+        }
+      })
+      .catch(() => {
+        ElMessage({
+          type: "error",
+          message: "删除失败",
+        });
+      });
+  }
+};
+//del raw
+const delConfirm = async (row) => {
+  console.log();
+  const msg = await keshifenleiPageDel([row.id]);
+  if (msg == 0) {
+    ElMessage({
+      type: "success",
+      message: "删除成功",
+    });
+    //刷新
+    await fetchData();
+  } else {
+    ElMessage({
+      type: "error",
+      message: "删除失败",
+    });
+  }
+};
 const resetForm = (formEl) => {
   if (!formEl) return;
   formEl.resetFields();
