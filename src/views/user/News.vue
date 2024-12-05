@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 13:55:56
+ * @LastEditTime: 2024-12-05 22:31:18
 -->
 
 <template>
@@ -53,7 +53,7 @@
         :lg="12"
         :xl="12"
       >
-        <el-card class="custom-card">
+        <el-card class="custom-card" @click="goToDetail(item)">
           <template #header>
             <h3>{{ item.title }}</h3>
           </template>
@@ -94,7 +94,8 @@
 import { reactive, onMounted, ref } from "vue";
 import { fetchNewsList } from "@/services/homeServices";
 import { baseUrl } from "@/utils/util";
-
+import { useRoute, useRouter } from "vue-router";
+const router = useRouter();
 // 分页状态
 const pagination = reactive({
   currentPage: 1, // 当前页码
@@ -154,7 +155,10 @@ const resetForm = (formEl) => {
   if (!formEl) return;
   formEl.resetFields();
 };
-
+const goToDetail = (item) => {
+  localStorage.setItem("newsdetail", JSON.stringify(item)); // 将 item 存储到 localStorage
+  router.push({ name: "公告详情", params: { id: item.id } });
+};
 // 在组件挂载时调用 fetchData
 onMounted(fetchData);
 </script>

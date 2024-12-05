@@ -15,10 +15,13 @@ import DepartmentNavigationCenter from '@/views/user/DepartmentNavigationCenter.
 import LocationNav from '@/views/user/LocationNav.vue'
 //公告信息
 import News from '@/views/user/News.vue'
+import NewsDetail from '@/views/user/NewsDetail.vue'
+
 //客服
 import Chat from '@/views/user/Chat.vue'
 //个人中心
 import UserCen from '@/views/user/UserCen.vue';
+// import UserInfo from '@/views/user/usercenter/UserInfo.vue';
 
 /* ***********前台 end************ */
 
@@ -98,6 +101,12 @@ const routes = [
                 show: true,
                 component: News,
                 icon: IoFileTray
+            },
+            {
+                path: 'newsdetail/:id', // 动态路由参数 :id
+                name: '公告详情', // 详情
+                component: NewsDetail,
+                props: true // 将动态路由参数传递给组件
             },
             {
                 path: 'chat',

@@ -235,11 +235,9 @@ onMounted(fetchData);
 }
 .profile-container {
   margin: 0 auto;
-  background-color: white;
   border-radius: 1rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   max-width: 1200px;
-  width: 100%;
+  width: 80%;
   padding: 2rem;
   transition: all 0.3s ease;
   animation: fade-in 0.5s ease-out;

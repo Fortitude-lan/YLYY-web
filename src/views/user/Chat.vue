@@ -101,9 +101,20 @@ const addChat = async () => {
     console.error("Error sending chat message:", error);
   }
 };
+let intervalId = ref(null);
+
 // 页面加载时获取聊天记录
 onMounted(async () => {
-  await getChatList(); // 加载聊天记录
+  intervalId.value = setInterval(async () => {
+    await getChatList(); // 加载聊天记录
+  }, 3000);
+});
+import { onBeforeUnmount } from "vue";
+onBeforeUnmount(() => {
+  if (intervalId.value) {
+    clearInterval(intervalId.value); // 清除定时器
+    intervalId.value = null;
+  }
 });
 </script>
 
