@@ -70,7 +70,34 @@ export const getBackRoutes = () => {
     const backRoute = routes.find(route => route.path === '/back');
     return backRoute ? backRoute.children.filter(child => child.show === true) : [];
 };
-//2.配置路由  
+export const getBackRoutesYS = () => {
+    const backRoute = routes.find(route => route.path === '/back');
+    return backRoute ? backRoute.children.filter(child => child.show === true && (child.auth == 0 || child.auth == 1)) : [];
+};
+export const getBackRoutesUser = () => {
+    const backRoute = routes.find(route => route.path === '/back');
+    return backRoute ? backRoute.children.filter(child => child.show === true && (child.auth == 0 || child.auth == 2)) : [];
+};
+export const getUrls = () => {
+    let urls = [];
+    const backRoute = routes.find(route => route.path === '/back');
+    // 如果当前路由有children，首先处理父路由
+    if (backRoute.children && backRoute.children.length > 0) {
+        // 添加当前路由的路径
+        urls.push(backRoute.path);
+
+        // 遍历子路由并拼接到路径中
+        backRoute.children.forEach(child => {
+            if (child.path) {
+                urls.push(backRoute.path + '/' + child.path); // 拼接父路由路径和子路由路径
+            }
+        });
+    }
+
+    return urls;
+}
+//2.配置路由 
+//auth 0 1 2 管理员 医生 用户 
 const routes = [
     {
         path: '/front',
@@ -154,6 +181,7 @@ const routes = [
         {
             path: 'usercenter',
             name: '用户中心',
+            auth: 0,
             show: true,
             icon: IoFileTray,
             children: [{
@@ -174,6 +202,7 @@ const routes = [
         {
             path: 'ys',
             name: '医生管理',
+            auth: 1,
             show: true,
             component: YSManag,
             icon: IoFileTray,

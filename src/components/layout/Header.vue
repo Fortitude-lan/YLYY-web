@@ -238,7 +238,7 @@ import { baseUrl } from "@/utils/util";
 
 import { ElMessage } from "element-plus";
 import {
-  loginService,
+  yhloginService,
   fetchCarouselImages,
   getSession,
 } from "@/services/headerServices";
@@ -309,7 +309,7 @@ const handleLogin = (formEl) => {
         ...signinValidateForm,
       };
       console.log(params);
-      const msg = await loginService(params);
+      const msg = await yhloginService(params);
       if (msg == 0) {
         ElMessage({
           message: "登陆成功",

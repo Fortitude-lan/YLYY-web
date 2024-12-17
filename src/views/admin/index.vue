@@ -3,7 +3,13 @@
     <!-- 侧边栏 -->
     <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible>
       <div class="logo">LOGO</div>
-      <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
+      <a-menu
+        v-model:selectedKeys="selectedKeys"
+        :open-keys="openKeys"
+        theme="dark"
+        mode="inline"
+        class="menu-list"
+      >
         <template v-for="route in backMenuList" :key="route.path">
           <template v-if="route.children && route.children.length">
             <a-sub-menu :key="route.path">
@@ -92,7 +98,12 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { getBackRoutes } from "@/router/index";
+import {
+  getBackRoutes,
+  getBackRoutesYS,
+  getBackRoutesUser,
+  getUrls,
+} from "@/router/index";
 
 import { ElMessage } from "element-plus";
 import { CiStar } from "vue3-icons/ci";
@@ -100,12 +111,21 @@ import { FaUserAstronaut } from "vue3-icons/fa";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons-vue";
 const collapsed = ref(false);
 const selectedKeys = ref([]);
+const openKeys = ref(getUrls());
 //路由
 const router = useRouter();
 const store = useStore();
+const role = localStorage.getItem("role");
 const username = localStorage.getItem("adminName");
+
 // 获取后台路由
-const backRoutes = getBackRoutes();
+const backRoutes =
+  role == "医生"
+    ? getBackRoutesYS()
+    : role == "用户"
+    ? getBackRoutesUser()
+    : getBackRoutes();
+
 const backMenuList = [
   { path: "/back", name: "系统首页", icon: CiStar }, // 补充第一个路由
   ...backRoutes.flatMap((child) => ({

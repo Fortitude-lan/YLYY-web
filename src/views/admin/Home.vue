@@ -1,11 +1,4 @@
-<!--
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-25 17:49:32
- * @LastEditors: Hesin
- * @LastEditTime: 2024-10-25 18:32:44
--->
+
 <template>
   <div>
     <div class="news-container">系统首页</div>

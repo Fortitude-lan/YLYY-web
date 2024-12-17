@@ -10,7 +10,7 @@
           status-icon
           :rules="rules"
         >
-          <label for="chk" aria-hidden="true">登录</label>
+          <label for="chk" aria-hidden="true">智慧预约系统后台</label>
           <el-form-item label="账  号" class="form-item" prop="username">
             <el-input
               v-model="signinValidateForm.username"
@@ -28,6 +28,7 @@
             <el-radio-group v-model="signinValidateForm.role">
               <el-radio value="users">管理员</el-radio>
               <el-radio value="yisheng">医生</el-radio>
+              <el-radio value="yonghu">普通用户</el-radio>
             </el-radio-group>
           </el-form-item>
           <button type="submit" @click.prevent="handleLogin(formSigninRef)">
@@ -133,6 +134,7 @@ import { baseUrl } from "@/utils/util";
 import { CiCirclePlus } from "vue3-icons/ci";
 import { ElMessage } from "element-plus";
 import { loginService, signUpService } from "@/services/backServices";
+
 import { reactive, ref, onMounted, computed } from "vue";
 // 获取路由
 const store = useStore();
@@ -228,6 +230,7 @@ const handleLogin = (formEl) => {
         ...signinValidateForm,
       };
       const msg = await loginService(params);
+      console.log('msg',msg)
       if (msg == 0) {
         ElMessage({
           message: "登陆成功",
@@ -244,10 +247,10 @@ const handleLogin = (formEl) => {
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve();
-            console.log("sssss");
+            console.log("跳转1s");
             // 跳转到 /back 页面
             router.push({ path: "/back" });
-          }, 100); // 适当延迟，例如100毫秒
+          }, 1000); // 适当延迟，例如100毫秒
         });
       } else {
         ElMessage.error("密码或账号错误");
@@ -317,8 +320,9 @@ onMounted(() => {
 .page-box {
   width: 100%;
   height: 100vh;
-  padding: 50px 0;
-  //   background: url(https://opma.justonetech.com/static/img/login/loginBg.png);
+  padding: 80px 0 0;
+  background: url(https://bpic.588ku.com/back_pic/06/46/79/8564b50001c525b.jpg) no-repeat;
+background-size: cover;
 }
 
 .form-layout {
@@ -352,7 +356,12 @@ onMounted(() => {
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 5px 20px 50px #000000;
-  background: linear-gradient(to bottom, #2a6bb5, #2b60a2, #99bce5);
+  background: linear-gradient(
+    to bottom,
+    #61a7ffb3,
+    rgba(48, 43, 99, 0.4117647059),
+    #8cb3ff
+  );
   #chk {
     display: none;
   }
@@ -362,7 +371,7 @@ onMounted(() => {
     font-size: 2.3em;
     justify-content: center;
     display: flex;
-    margin: 50px;
+    margin: 30px;
     font-weight: bold;
     cursor: pointer;
     transition: 0.5s ease-in-out;
@@ -382,14 +391,13 @@ onMounted(() => {
   button {
     width: 60%;
     height: 40px;
-    margin: 10px auto;
+    margin: 0px auto;
     justify-content: center;
     display: block;
     color: #fff;
     background: #255da7;
     font-size: 1em;
     font-weight: bold;
-    margin-top: 30px;
     outline: none;
     border: none;
     border-radius: 5px;
@@ -400,10 +408,10 @@ onMounted(() => {
     background: #4479ce;
   }
   .signup {
-    height: 450px;
-    background: #eee;
+    height: 470px;
+    background: #fff;
     border-radius: 60% / 10%;
-    transform: translateY(-210px);
+    transform: translateY(-170px);
     transition: 0.8s ease-in-out;
     label {
       color: #2f5da5;
@@ -450,8 +458,8 @@ onMounted(() => {
   }
 
   #chk:checked ~ .signup {
-    transform: translateY(-580px);
-    overflow-y: scroll;
+    transform: translateY(-535px);
+    overflow-y: hidden;
   }
   #chk:checked ~ .signup label {
     transform: scale(1);

@@ -4,30 +4,40 @@
  * @Author: Hesin
  * @Date: 2024-11-21 18:26:56
  * @LastEditors: Hesin
- * @LastEditTime: 2024-12-16 21:19:40
+ * @LastEditTime: 2024-12-17 16:34:10
  */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
-
+import {
+    yhloginService,
+} from "./headerServices";
 // 登录
 export const loginService = async (params) => {
     try {
         console.log(params)
         const { role } = params
-        const res = await get(`${role}/login`, { username: params.username, password: params.password });
-        if (res.code === 0) {
-            console.log(res)
-            localStorage.setItem('Token', res.token);
-            localStorage.setItem('sessionTable', role);
-            if (role == 'users') {
-                localStorage.setItem('role', '管理员');
-                localStorage.setItem('loginTable', 'yisheng');
-            } else if (role == 'yisheng') {
-                localStorage.setItem('role', '医生');
-            }
-            getSession(role);
+        let res;
+
+        if (role == 'yonghu') {
+            res = await yhloginService({ username: params.username, password: params.password });
+            return res
         }
-        return res.code
+        else {
+            res = await get(`${role}/login`, { username: params.username, password: params.password });
+            if (res.code === 0) {
+                console.log(res)
+                localStorage.setItem('Token', res.token);
+                localStorage.setItem('sessionTable', role);
+                if (role == 'users') {
+                    localStorage.setItem('role', '管理员');
+                    localStorage.setItem('loginTable', 'yisheng');
+                } else if (role == 'yisheng') {
+                    localStorage.setItem('role', '医生');
+                }
+                getSession(role);
+            }
+            return res.code
+        }
 
     } catch (error) {
         console.error('Error fetching carousel images:', error);
@@ -198,7 +208,7 @@ export const fetchYsPageDelAPI = async (params) => {
 };
 
 //挂号list
-export const fetchZXGHList = async (params, page=1, limit=9999) => {
+export const fetchZXGHList = async (params, page = 1, limit = 9999) => {
     try {
         const response = await get(API_ENDPOINTS.zaixianguahaoAPI, {
             ...params, page, limit

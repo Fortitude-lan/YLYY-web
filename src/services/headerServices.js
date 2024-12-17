@@ -4,13 +4,13 @@
  * @Author: Hesin
  * @Date: 2024-10-22 19:25:39
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 17:12:16
+ * @LastEditTime: 2024-12-17 16:30:11
  */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
 
 // 登录
-export const loginService = async (params) => {
+export const yhloginService = async (params) => {
     try {
         const res = await get(API_ENDPOINTS.loginAPI, { ...params, table: 'yonghu' });
         console.log(res)
