@@ -2,7 +2,12 @@
   <div class="profile-container">
     <div class="profile-content">
       <div class="profile-info-section">
-        <el-form ref="formRef" :model="infoValidateForm" class="form-layout">
+        <el-form
+          v-if="role == '用户'"
+          ref="formRef"
+          :model="infoValidateForm"
+          class="form-layout"
+        >
           <div>
             <el-form-item label="账号" class="form-item" required>
               <el-input
@@ -184,6 +189,8 @@ import nongye from "@/assets/img/charge/nongye.png";
 import zhongguo from "@/assets/img/charge/zhongguo.png";
 import weixin from "@/assets/img/charge/weixin.png";
 import zhifubao from "@/assets/img/charge/zhifubao.png";
+const role = localStorage.getItem("role"); //
+
 // 图片数组
 const images = [jianshe, jiaotong, nongye, zhongguo, weixin, zhifubao];
 // 响应式数据
@@ -204,6 +211,7 @@ const infoValidateForm = reactive({
   zhaopian: null,
   jiuzhenkahao: "",
 });
+
 const czformRef = ref();
 const czFormVisible = ref(false);
 const czform = reactive({
@@ -250,7 +258,9 @@ const onSubmit = async (formEl) => {
       console.log(infoValidateForm);
 
       // // 发送请求
-      const res = await fetchUpdateUserInfo(infoValidateForm);
+      const res = await fetchUpdateUserInfo(
+        role == "用户" ? infoValidateForm : infoValidateForm1
+      );
       if (res === 0) {
         ElMessage({
           message: "更新成功",
