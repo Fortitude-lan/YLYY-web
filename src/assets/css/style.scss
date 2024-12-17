@@ -11,7 +11,8 @@ body {
   margin: 0;
   // overflow: hidden; /* 隐藏滚动条 */
 }
-
+.BMap_cpyCtrl {display: none;}
+.anchorBL{display:none;}
 /* 整体滚动条 */
 ::-webkit-scrollbar {
   width: 8px; /* 宽度 */

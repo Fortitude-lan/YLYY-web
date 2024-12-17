@@ -1,12 +1,3 @@
-<!--
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-17 14:13:55
- * @LastEditors: Hesin
- * @LastEditTime: 2024-11-20 16:31:25
--->
-
 <template>
   <div class="pageM">
     <!-- title -->
@@ -100,7 +91,7 @@
       title="科室详情信息"
       :direction="rtl"
       :before-close="handleClose"
-      size="80%"
+      size="60%"
     >
       <div v-if="selectedItem">
         <p><strong>科室名称:</strong> {{ selectedItem.keshimingcheng }}</p>
@@ -122,8 +113,11 @@
         <!-- 信息表 -->
         <el-form ref="formRef" :model="ksxxInfo" class="form-layout">
           <div class="tt">
-            <el-button @click.prevent="onSubmit(formRef)" class="edit-button"
-              >挂号</el-button
+            <el-button
+              type="primary"
+              @click.prevent="onOnlineSubmit()"
+              class="edit-button"
+              >在线挂号</el-button
             >
           </div>
           <div class="form-row">
@@ -225,6 +219,18 @@
             </el-form-item>
           </div>
         </el-form>
+
+        <!-- 挂号确认 -->
+        <el-dialog v-model="czFormVisible" title="挂号确认" width="550">
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button @click="czFormVisible = false">取消</el-button>
+              <el-button type="danger" @click="onChargeSubmit(czformRef)">
+                确认挂号
+              </el-button>
+            </div>
+          </template>
+        </el-dialog>
       </div>
     </el-drawer>
   </div>
@@ -232,13 +238,20 @@
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
+import moment from "moment";
+import { baseUrl } from "@/utils/util";
 import {
   fetcKeshifenlei,
   fetchKeshiInfo,
   fetchKeshiList,
 } from "@/services/departServices";
-import { baseUrl } from "@/utils/util";
+import { fetchZXGHList } from "@/services/backServices";
+import { fetchBook } from "@/services/backUserServices";
+import { getSession } from "@/services/headerServices";
 
+import { ElMessage } from "element-plus";
+
+const userInfo = ref({});
 // 分页状态
 const pagination = reactive({
   currentPage: 1, // 当前页码
@@ -294,6 +307,7 @@ const fetchData = async () => {
   try {
     ksflList.value = await fetcKeshifenlei();
     ksflList.value.unshift("全部");
+    userInfo.value = await getSession();
     // 获取科室信息，包含分页
     const query = buildQueryParams(); // 使用统一查询方法
     const { list, totalPage, currPage } = await fetchKeshiList(
@@ -321,7 +335,56 @@ const onSubmit = async (formEl) => {
     }
   });
 };
+const onOnlineSubmit = async () => {
+  console.log("user", userInfo.value);
+  console.log("info", ksxxInfo.value);
 
+  const params = {
+    guahaobianhao: new Date().getTime(),
+    keshimingcheng: ksxxInfo.value.keshimingcheng,
+    keshihao: ksxxInfo.value.keshihao,
+    jine: ksxxInfo.value.jine,
+    zuozhenshijian: ksxxInfo.value.zuozhenshijian,
+    renshu: 1,
+    // renshu: Number(ksxxInfo.value.renshu) - 1,
+    guahaoshijian: moment(new Date()).format("YYYY-MM-DD hh:mm:ss"),
+    zhanghao: userInfo.value.zhanghao,
+    xingming: userInfo.value.xingming,
+    jiuzhenkahao: userInfo.value.jiuzhenkahao,
+    yonghujine: userInfo.value.jine,
+    yishenggonghao: ksxxInfo.value.yishenggonghao,
+    yishengxingming: ksxxInfo.value.yishengxingming,
+    zhiwei: ksxxInfo.value.zhiwei,
+    crossuserid: userInfo.value.id,
+    crossrefid: ksxxInfo.value.id,
+  };
+  console.log("params", params);
+  //查列表里有 则已经预约
+  const resIsBook = await fetchZXGHList({
+    crossuserid: userInfo.value.id,
+    crossrefid: ksxxInfo.value.id,
+  });
+  if (resIsBook.list.length == 1) {
+    ElMessage({
+      message: "已预约挂号",
+      type: "warning",
+    });
+  } else {
+    //没有则 add
+    const msg = await fetchBook(params);
+    if (msg === 0) {
+      ElMessage({
+        message: "挂号成功",
+        type: "success",
+      });
+    } else {
+      ElMessage({
+        message: "挂号失败",
+        type: "error",
+      });
+    }
+  }
+};
 const resetForm = (formEl) => {
   if (!formEl) return;
   formEl.resetFields();
@@ -347,6 +410,9 @@ onMounted(fetchData);
 .pageM {
   padding: 0 5%;
 }
+.tt {
+  padding: 20px 0;
+}
 .form {
   margin: 20px 0;
   width: 70vw;
@@ -355,6 +421,11 @@ onMounted(fetchData);
     padding-left: 10px;
   }
 }
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
 .form-btns {
   :deep(.el-form-item__content) {
     min-width: 150px;
@@ -408,8 +479,13 @@ onMounted(fetchData);
   transition: background-color 0.3s ease;
 }
 .form-layout {
+  padding: 0 20px;
+  box-sizing: border-box;
   :deep(.el-form-item__label) {
-    min-width: 80px;
+    min-width: 100px;
+  }
+  :deep(.el-form-item) {
+    width: 48%;
   }
 }
 </style>

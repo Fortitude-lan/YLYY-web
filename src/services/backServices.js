@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 1.0
+ * @Author: Hesin
+ * @Date: 2024-11-21 18:26:56
+ * @LastEditors: Hesin
+ * @LastEditTime: 2024-12-16 21:19:40
+ */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
 
@@ -61,12 +69,18 @@ export const getSession = async (role) => {
     }
 };
 //修改密码
-export const updateYSService = async (params) => {
+export const fetchMima = async (role, params) => {
     try {
-        const time = new Date().getTime()
-        console.log(params)
-        const res = await post(API_ENDPOINTS.ysUpdateAPI, { ...params, addtime: time });
-        return res.code
+        if (role == 'yonghu') {
+            const res = await post(API_ENDPOINTS.userUpdateAPI, params);
+            return res.code
+        } else if (role == 'yisheng') {
+            const time = new Date().getTime()
+            console.log(params)
+            const res = await post(API_ENDPOINTS.ysUpdateAPI, { ...params, addtime: time });
+            return res.code
+        }
+
 
     } catch (error) {
         console.error('Error fetching carousel images:', error);
@@ -177,6 +191,20 @@ export const fetchYsPageDelAPI = async (params) => {
         const res = await post(API_ENDPOINTS.ysPageDelAPI, params);
         return res.code
 
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
+
+//挂号list
+export const fetchZXGHList = async (params, page=1, limit=9999) => {
+    try {
+        const response = await get(API_ENDPOINTS.zaixianguahaoAPI, {
+            ...params, page, limit
+        });
+        console.log(response.data)
+        return response.data
     } catch (error) {
         console.error('Error fetching carousel images:', error);
         throw error; // 抛出错误以供调用者处理

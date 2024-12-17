@@ -18,7 +18,7 @@
               >修改</el-button
             >
           </div>
-          <div class="form-row">
+          <div>
             <el-form-item label="账号" class="form-item" required>
               <el-input
                 v-model="infoValidateForm.zhanghao"
@@ -44,7 +44,7 @@
               </el-input>
             </el-form-item>
           </div>
-          <div class="form-row">
+          <div>
             <el-form-item label="姓名" class="form-item">
               <el-input
                 v-model="infoValidateForm.xingming"
@@ -63,7 +63,7 @@
               </el-select>
             </el-form-item>
           </div>
-          <div class="form-row">
+          <div>
             <el-form-item label="电话" class="form-item">
               <el-input
                 v-model="infoValidateForm.lianxidianhua"
@@ -78,16 +78,29 @@
                 required
               ></el-input>
             </el-form-item>
+            <el-form-item label="就诊卡号" class="form-item">
+              <el-input
+                v-model="infoValidateForm.jiuzhenkahao"
+                placeholder="就诊卡号"
+                required
+                disabled
+              ></el-input>
+            </el-form-item>
           </div>
-          <div class="form-row">
-            <el-form-item label="金额" class="form-item">
+          <div>
+            <el-form-item label="就诊余额" class="form-item">
               <el-input
                 v-model="infoValidateForm.jine"
-                placeholder="金额"
+                placeholder="就诊余额"
                 required
                 disabled
               />
+              <span class="chongzhi" @click="czFormVisible = true"
+                ><RiExchangeCnyFill size="20" color="red" />用户充值</span
+              >
             </el-form-item>
+          </div>
+          <div>
             <el-form-item label="症状描述" class="form-item">
               <el-input
                 v-model="infoValidateForm.zhengzhuangmiaoshu"
@@ -95,8 +108,6 @@
                 required
               ></el-input>
             </el-form-item>
-          </div>
-          <div class="form-row">
             <el-form-item label="上传照片" class="form-item">
               <el-upload
                 class="upload-demo"
@@ -132,20 +143,68 @@
         </el-form>
       </div>
     </div>
+    <!-- 弹窗 add -->
+    <el-dialog v-model="czFormVisible" title="充值" width="500">
+      <el-form ref="czformRef" :model="czform">
+        <el-form-item label="充值余额" >
+          <el-input v-model="czform.jine" autocomplete="off" type="number" />
+        </el-form-item>
+      </el-form>
+      <!-- 付款方式 -->
+      <el-form-item label="" >
+        <div class="image-options">
+          <span
+            v-for="(image, index) in images"
+            :key="index"
+            class="image-label"
+          >
+            <input
+              type="radio"
+              name="selectedImage"
+              :value="image"
+              v-model="czform.selectedImage"
+            />
+            <img :src="image" :alt="'图片' + (index + 1)" />
+          </span>
+        </div>
+      </el-form-item>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="czFormVisible = false">取消</el-button>
+          <el-button type="danger" @click="onChargeSubmit(czformRef)">
+            充值
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { PiEyeBold, PiEyeClosed } from "vue3-icons/pi";
 import { getSession, fetchUpdateUserInfo } from "@/services/headerServices";
+import { fetchCharge } from "@/services/backUserServices";
 import { baseUrl } from "@/utils/util";
+import moment from "moment";
+
+import { PiEyeBold, PiEyeClosed } from "vue3-icons/pi";
+import { RiExchangeCnyFill } from "vue3-icons/ri";
+import jianshe from "@/assets/img/charge/jianshe.png";
+import jiaotong from "@/assets/img/charge/jiaotong.png";
+import nongye from "@/assets/img/charge/nongye.png";
+import zhongguo from "@/assets/img/charge/zhongguo.png";
+import weixin from "@/assets/img/charge/weixin.png";
+import zhifubao from "@/assets/img/charge/zhifubao.png";
+// 图片数组
+const images = [jianshe, jiaotong, nongye, zhongguo, weixin, zhifubao];
 // 响应式数据
 const userInfo = ref({});
 
 const formRef = ref();
 const infoValidateForm = reactive({
+  id: "",
+  addtime: "",
   zhanghao: "",
   mima: "",
   xingming: "",
@@ -155,7 +214,14 @@ const infoValidateForm = reactive({
   jine: 0,
   zhengzhuangmiaoshu: "",
   zhaopian: null,
+  jiuzhenkahao: "",
 });
+const czformRef = ref();
+const czFormVisible = ref(false);
+const czform = reactive({
+  jine: "",
+});
+
 // 控制密码显示/隐藏的状态
 const isPasswordVisible = ref(false);
 // 切换密码可见性
@@ -169,11 +235,14 @@ const fetchData = async () => {
     userInfo.value = await getSession();
     console.log(userInfo);
     // 回显数据到表单
+    infoValidateForm.id = userInfo.value.id || "";
+    infoValidateForm.addtime = userInfo.value.addtime || "";
     infoValidateForm.zhanghao = userInfo.value.zhanghao || "";
     infoValidateForm.mima = userInfo.value.mima || "";
     infoValidateForm.xingming = userInfo.value.xingming || "";
     infoValidateForm.xingbie = userInfo.value.xingbie || "";
     infoValidateForm.lianxidianhua = userInfo.value.lianxidianhua || "";
+    infoValidateForm.jiuzhenkahao = userInfo.value.jiuzhenkahao || "";
     infoValidateForm.nianling = Number(userInfo.value.nianling) || 0;
     infoValidateForm.jine = Number(userInfo.value.jine) || 0;
     infoValidateForm.zhaopian = userInfo.value.zhaopian || null;
@@ -185,7 +254,7 @@ const fetchData = async () => {
   }
 };
 
-//查找
+//修改
 const onSubmit = async (formEl) => {
   if (!formEl) return;
   await formEl.validate(async (valid, fields) => {
@@ -221,6 +290,45 @@ const handleUpdateImage = (response) => {
     type: "success",
   });
 };
+
+//充值
+const onChargeSubmit = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      console.log("submit!");
+      const params = {
+        chongzhishijian: moment(new Date()).format("YYYY-MM-DD hh:mm:ss"),
+        jine: czform.jine,
+        jiuzhenkahao: infoValidateForm.jiuzhenkahao,
+        xingming: infoValidateForm.xingming,
+        zhanghao: infoValidateForm.zhanghao,
+      };
+      // console.log(params)
+      const msg = await fetchCharge(params, {
+        ...infoValidateForm,
+        jine: Number(czform.jine) + infoValidateForm.jine,
+      });
+      if (msg == 0) {
+        ElMessage({
+          message: "充值成功",
+          type: "success",
+        });
+        //
+        czFormVisible.value = false;
+        //更新
+        await fetchData();
+      } else {
+        ElMessage({
+          message: "充值失败",
+          type: "error",
+        });
+      }
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
 // 在组件挂载时调用 fetchData
 onMounted(fetchData);
 </script>
@@ -233,6 +341,7 @@ onMounted(fetchData);
     margin-bottom: 20px;
   }
 }
+
 .profile-container {
   margin: 0 auto;
   border-radius: 1rem;
@@ -350,6 +459,31 @@ onMounted(fetchData);
   }
   to {
     opacity: 1;
+  }
+}
+.chongzhi {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 15px;
+  cursor: pointer;
+  &:hover {
+    color: #bb85df;
+    font-weight: 600;
+  }
+}
+.image-options {
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.image-label {
+  display: flex;
+  width: 120px;
+  align-items: center;
+  img {
+    width: 100%;
   }
 }
 </style>

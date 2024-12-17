@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-21 09:07:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 15:15:36
+ * @LastEditTime: 2024-12-17 09:33:49
  */
 import axios from 'axios';
 export const baseUrl = '/springbootYL'
@@ -62,3 +62,27 @@ export const post = async (url, data = {}) => {
 };
 
 // 其他 HTTP 方法可以在这里添加
+const ak = 'nSxiPohfziUaCuONe4ViUP2N'
+
+/**
+ * 异步加载百度地图
+ * @returns {Promise}
+ * @constructor
+ */
+export function loadBaiDuMap() {
+    return new Promise(function (resolve, reject) {
+        try {
+            console.log('BMap is defined:', BMapGL === undefined || BMapGL)
+            resolve(BMapGL)
+        } catch (err) {
+            window.init = function () {
+                resolve(BMapGL)
+            }
+            let script = document.createElement('script')
+            script.type = 'text/javascript'
+            script.src = `http://api.map.baidu.com/api?v=1.0&type=webgl&ak=${ak}&callback=init`
+            script.onerror = reject
+            document.body.appendChild(script)
+        }
+    })
+}

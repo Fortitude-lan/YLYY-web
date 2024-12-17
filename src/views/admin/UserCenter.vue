@@ -8,24 +8,45 @@
     <el-form-item label="原密码" prop="oldPassword">
       <el-input
         v-model="passwordForm.oldPassword"
-        type="password"
+        :type="isPasswordVisible ? 'text' : 'password'"
         autocomplete="off"
+      >
+        <template #append>
+          <component
+            :is="isPasswordVisible ? PiEyeBold : PiEyeClosed"
+            @click="togglePasswordVisibility"
+            style="cursor: pointer; font-size: 20px"
+          /> </template
       ></el-input>
     </el-form-item>
 
     <el-form-item label="新密码" prop="mima">
       <el-input
         v-model="passwordForm.mima"
-        type="password"
+        :type="isPasswordVisible ? 'text' : 'password'"
         autocomplete="off"
+      >
+        <template #append>
+          <component
+            :is="isPasswordVisible ? PiEyeBold : PiEyeClosed"
+            @click="togglePasswordVisibility"
+            style="cursor: pointer; font-size: 20px"
+          /> </template
       ></el-input>
     </el-form-item>
 
-    <el-form-item label="确认密码" prop="password">
+    <el-form-item label="确认新密码" prop="password">
       <el-input
         v-model="passwordForm.password"
-        type="password"
+        :type="isPasswordVisible ? 'text' : 'password'"
         autocomplete="off"
+      >
+        <template #append>
+          <component
+            :is="isPasswordVisible ? PiEyeBold : PiEyeClosed"
+            @click="togglePasswordVisibility"
+            style="cursor: pointer; font-size: 20px"
+          /> </template
       ></el-input>
     </el-form-item>
 
@@ -39,13 +60,21 @@
 <script setup>
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { getSession, updateYSService } from "@/services/backServices";
+import { PiEyeBold, PiEyeClosed } from "vue3-icons/pi";
+import { getSession, fetchMima } from "@/services/backServices";
 
 const passwordForm = ref({
   oldPassword: "",
   mima: "",
   password: "",
 });
+
+// 控制密码显示/隐藏的状态
+const isPasswordVisible = ref(false);
+// 切换密码可见性
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
 
 const passwordRules = {
   oldPassword: [{ required: true, message: "请输入原密码", trigger: "blur" }],
@@ -83,15 +112,14 @@ const submitForm = () => {
         const params = {
           ...userinfo,
           mima: passwordForm.value.mima,
-          password: passwordForm.value.password,
         };
-        const res = await updateYSService(params);
+        const res = await fetchMima(role, params);
         if (res == 0) {
           ElMessage({
             message: "修改成功",
             type: "success",
           });
-          console.log("表单验证通过，提交数据：", passwordForm.value);
+          resetForm();
         }
       } else {
         ElMessage({

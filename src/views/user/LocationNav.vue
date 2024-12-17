@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-17 14:13:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-11-20 16:56:29
+ * @LastEditTime: 2024-12-17 10:28:32
 -->
 
 <template>
@@ -32,7 +32,7 @@
     </div>
     <!-- 选择器 -->
     <el-form ref="formRef" :model="form" label-width="auto" class="form">
-      <el-form-item label="出发地" prop="chufadi">
+      <el-form-item label="省市" prop="chufadi">
         <el-input v-model="form.chufadi" />
       </el-form-item>
       <el-form-item label="目的地" prop="mudedi">
@@ -81,17 +81,22 @@
       />
     </el-row>
     <!-- 抽屉 -->
-    <el-drawer
-      v-model="drawerVisible"
-      title="导航信息"
-      :direction="rtl"
-      :before-close="handleClose"
-      size="80%"
-    >
+    <el-drawer v-model="drawerVisible" title="导航信息" size="80%">
       <div v-if="selectedItem">
-        <!-- <p><strong>出发地:</strong> {{ selectedItem.chufadi }}</p> -->
-        <el-descriptions title="">
-          <el-descriptions-item label="出发地:">{{
+        <el-carousel indicator-position="none" height="250px">
+          <el-carousel-item
+            v-for="(image, index) in selectedItem.luxiantu.split(',')"
+            :key="index"
+          >
+            <img
+              :src="`${baseUrl}${image}`"
+              style="width: 100%; height: 300px; object-fit: cover"
+            />
+          </el-carousel-item>
+        </el-carousel>
+        <!-- <p><strong>省市:</strong> {{ selectedItem.chufadi }}</p> -->
+        <el-descriptions title="" class="des">
+          <el-descriptions-item label="省市:">{{
             selectedItem.chufadi
           }}</el-descriptions-item>
           <el-descriptions-item label="目的地:">{{
@@ -105,27 +110,43 @@
           </el-descriptions-item>
         </el-descriptions>
         <!-- <p><strong>简介:</strong> {{ selectedItem.jianjie }}</p> -->
-        <el-carousel indicator-position="none" height="300px">
-          <el-carousel-item
-            v-for="(image, index) in selectedItem.luxiantu.split(',')"
-            :key="index"
-          >
-            <img
-              :src="`${baseUrl}${image}`"
-              style="width: 100%; height: 300px; object-fit: cover"
-            />
-          </el-carousel-item>
-        </el-carousel>
+      </div>
+      <!-- 显示地图 -->
+      <div>
+        <!-- 输入省市:
+        <input v-model="destination" placeholder="" />
+         <el-select v-model="currentAddress">
+          <el-option v-for="item in addressList" :value="item" :key="item">{{
+            item.address
+          }}</el-option>
+        </el-select>
+       <div class="state" v-if="!isLoading && !isEmpty">
+          <h5>解析结果:</h5>
+          <span>纬度 - {{ point?.lat }}</span>
+          <span>经度 - {{ point?.lng }}</span>
+        </div>
+        <div class="state" v-else-if="isEmpty">没有解析到结果 ！</div>
+        <div class="state" v-else>解析中...</div> -->
+        <br />
+        <BMap ref="map" :center="point" @initd="handleInitd">
+          <BZoom />
+          <template v-if="!isLoading && !isEmpty">
+            <BMarker :position="point"></BMarker>
+          </template>
+        </BMap>
       </div>
     </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, ref, watch } from "vue";
 import { fetchDaohangList, fetchDaohangInfo } from "@/services/departServices";
 import { baseUrl } from "@/utils/util";
+import { BMap, useAddressGeocoder } from "vue3-baidu-map-gl";
+const map = ref();
 
+const destination = ref("");
 // 分页状态
 const pagination = reactive({
   currentPage: 1, // 当前页码
@@ -135,7 +156,10 @@ const pagination = reactive({
 // 控制 el-drawer 的显示状态
 const drawerVisible = ref(false);
 // 存储当前选中的项
-const selectedItem = ref(null);
+const selectedItem = ref({
+  chufadi: "",
+  mudedi: "",
+});
 
 // 响应式数据
 const dhList = ref({});
@@ -149,11 +173,9 @@ const form = reactive({
 
 // 打开详情方法
 const openDrawer = async (item) => {
-  console.log("ssss", item);
   selectedItem.value = item;
   const info = await fetchDaohangInfo(item.id);
   dhInfo.value = info;
-
   drawerVisible.value = true;
 };
 
@@ -196,9 +218,9 @@ const onSubmit = async (formEl) => {
       pagination.currentPage = 1; // 查询时重置为第一页
       // 发送请求
       await fetchData();
-      console.log("submit!");
+      // console.log("submit!");
     } else {
-      console.log("error submit!", fields);
+      // console.log("error submit!", fields);
     }
   });
 };
@@ -219,8 +241,36 @@ const handleSizeChange = async (size) => {
   pagination.currentPage = 1; // 重置为第一页
   await fetchData();
 };
+
+const currentAddress = ref({
+  address: selectedItem.value.mudedi,
+  // city: "北京市",
+});
+
+watch(
+  () => currentAddress,
+  (n) => {
+    // get(n.value.address, n.value.city);
+    get(selectedItem.value.mudedi);
+  },
+  {
+    deep: true,
+  }
+);
+const { get, point, isLoading, isEmpty } = useAddressGeocoder(() => {
+  map.value.resetCenter();
+});
+
+function handleInitd() {
+  console.log("XXXXXXXXXXXXXXXXXXXXXX");
+  console.log(selectedItem.value.mudedi);
+  // get(currentAddress.value.address, currentAddress.value.city);
+  get(selectedItem.value.mudedi, selectedItem.value.chufadi);
+}
 // 在组件挂载时调用 fetchData
-onMounted(fetchData);
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -277,5 +327,12 @@ onMounted(fetchData);
     transform: translateY(-5px);
     transition: transform 0.5s ease;
   }
+}
+.map-container {
+  width: 100%;
+  height: 300px;
+}
+.des {
+  padding: 20px 0;
 }
 </style>
