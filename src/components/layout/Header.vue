@@ -589,6 +589,6 @@ onMounted(() => {
 }
 
 .breadcrumb {
-  margin: 20px 0 30px 20px;
+  margin: 20px 0 30px 10vw;
 }
 </style>

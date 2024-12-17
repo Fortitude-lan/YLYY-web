@@ -1,11 +1,4 @@
-/*
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-17 13:34:11
- * @LastEditors: Hesin
- * @LastEditTime: 2024-12-17 09:48:25
- */
+
 
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'

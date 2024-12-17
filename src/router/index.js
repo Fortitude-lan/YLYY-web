@@ -17,11 +17,12 @@ import LocationNav from '@/views/user/LocationNav.vue'
 import News from '@/views/user/News.vue'
 import NewsDetail from '@/views/user/NewsDetail.vue'
 
-//客服
-import Chat from '@/views/user/Chat.vue'
 //个人中心
 import UserCen from '@/views/user/UserCen.vue';
-// import UserInfo from '@/views/user/usercenter/UserInfo.vue';
+//个人中心--个人信息
+import UInfo from '@/views/user/usercenter/UInfo.vue';
+//个人中心--客服
+import Chat from '@/views/user/usercenter/Chat.vue'
 
 /* ***********前台 end************ */
 
@@ -58,6 +59,8 @@ import NotFound from '@/views/404.vue'
 import { IoFileTray } from "vue3-icons/io5";
 import { RiCustomerService2Line } from "vue3-icons/ri";
 import { FaRegUser } from "vue3-icons/fa6";
+import { CiStar } from "vue3-icons/ci";
+
 // 提取前端路由的函数
 export const getFrontendRoutes = () => {
     const frontRoute = routes.find(route => route.path === '/front');
@@ -81,6 +84,20 @@ const routes = [
                 component: Home,
                 icon: ''
             },
+
+            {
+                path: 'news',
+                name: '公告信息',
+                show: true,
+                component: News,
+                icon: IoFileTray
+            },
+            {
+                path: 'newsdetail/:id', // 动态路由参数 :id
+                name: '公告详情', // 详情
+                component: NewsDetail,
+                props: true // 将动态路由参数传递给组件
+            },
             {
                 path: 'departmentNavigationCenter',
                 name: '科室导航中心',
@@ -96,33 +113,28 @@ const routes = [
                 icon: IoFileTray
             },
             {
-                path: 'news',
-                name: '公告信息',
-                show: true,
-                component: News,
-                icon: IoFileTray
-            },
-            {
-                path: 'newsdetail/:id', // 动态路由参数 :id
-                name: '公告详情', // 详情
-                component: NewsDetail,
-                props: true // 将动态路由参数传递给组件
-            },
-            {
-                path: 'chat',
-                name: '智能客服',
-                meta: { requiresAuth: true },
-                show: true,
-                component: Chat,
-                icon: RiCustomerService2Line
-            },
-            {
                 path: 'userCen',
                 name: '个人中心',
-                meta: { requiresAuth: true },
                 show: true,
                 component: UserCen,
-                icon: FaRegUser
+                meta: { requiresAuth: true },
+                icon: FaRegUser,
+                children: [
+                    {
+                        // 这里不设置值，是把main作为默认页面
+                        path: '',
+                        name: '个人详情',
+                        component: UInfo,
+                        icon: CiStar
+                    },
+                    {
+                        path: 'chat',
+                        name: '智能客服',
+                        show: true,
+                        component: Chat,
+                        icon: RiCustomerService2Line
+                    },
+                ]
             },
 
         ]

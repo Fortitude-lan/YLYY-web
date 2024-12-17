@@ -1,12 +1,3 @@
-<!--
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-10-17 14:13:55
- * @LastEditors: Hesin
- * @LastEditTime: 2024-11-19 16:00:20
--->
-
 <template>
   <div class="pageM">
     <!-- title -->
@@ -14,8 +5,6 @@
       :style="{
         width: '100%',
         textAlign: 'center',
-        background:
-          'url(http://codegen.caihongy.cn/20221027/fc985400d2a2484d8d9e17eb893d2c05.png) no-repeat 10% center,url(http://codegen.caihongy.cn/20221027/6602c4fb09df4bd4881cabfef19d2ed3.png) no-repeat 90% center',
       }"
     >
       <h1
@@ -133,7 +122,9 @@ onBeforeUnmount(() => {
   height: 300px;
   overflow-y: scroll;
   border: 1px solid #eeeeee;
-  background: url(https://th.bing.com/th/id/OIP.yzajnOAOhTiFnX3B6OtNeAHaEK?rs=1&pid=ImgDetMain);
+  background: url(https://tse1-mm.cn.bing.net/th/id/OIP-C.RMOXDWyWU2xO6lhOOMFrUgHaDp?rs=1&pid=ImgDetMain)
+    no-repeat;
+  background-size: cover;
 
   .left-content {
     float: left;
