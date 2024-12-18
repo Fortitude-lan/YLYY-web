@@ -1,11 +1,4 @@
-/*
- * @Descripttion: 
- * @version: 1.0
- * @Author: Hesin
- * @Date: 2024-11-21 18:26:56
- * @LastEditors: Hesin
- * @LastEditTime: 2024-12-17 16:34:10
- */
+
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
 import {
@@ -99,7 +92,6 @@ export const fetchMima = async (role, params) => {
 };
 
 //注册医生
-
 export const signUpService = async (params) => {
     try {
         const res = await post(API_ENDPOINTS.signUpYSAPI, {
@@ -160,6 +152,44 @@ export const keshifenleiPageDel = async (params) => {
     try {
         console.log(params)
         const res = await post(API_ENDPOINTS.keshifenleiPageDAPI, params);
+        return res.code
+
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
+
+//用户列表
+export const fetchUserPage = async (params, page, limit) => {
+    try {
+        const response = await get(API_ENDPOINTS.userPageAPI, {
+            ...params, page, limit, sort: 'id', order: 'desc'
+        });
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
+//用户 add
+export const fetchUserAdd = async (params) => {
+    try {
+        // console.log(params)
+        const res = await post(API_ENDPOINTS.userAddAPI, params);
+        return res.code
+
+    } catch (error) {
+        console.error('Error fetching carousel images:', error);
+        throw error; // 抛出错误以供调用者处理
+    }
+};
+//用户 del
+export const fetchUserDel = async (params) => {
+    try {
+        // console.log(params)
+        const res = await post(API_ENDPOINTS.userDelAPI, params);
         return res.code
 
     } catch (error) {

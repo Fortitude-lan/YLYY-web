@@ -29,11 +29,29 @@ import Chat from '@/views/user/usercenter/Chat.vue'
 /* ***********后台 start************ */
 import Login from '@/views/admin/Login.vue'
 import HomeBack from '@/views/admin/Home.vue'
+
+//账号管理--密码
 import UserCenter from '@/views/admin/UserCenter.vue'
+//账号管理--个人信息
 import UserInfo from '@/views/admin/UserInfo.vue'
+
+//用户管理--用户
+import UserManag from '@/views/admin/UserManag.vue'
+
+//医生管理
 import YSManag from '@/views/admin/YSManag.vue'
+
+//科室管理
 import DepManag from '@/views/admin/DepManag.vue'
 import DepSort from '@/views/admin/DepSort.vue'
+
+
+
+
+
+
+
+
 /* ***********后台 end************ */
 
 import NotFound from '@/views/404.vue'
@@ -198,6 +216,13 @@ const routes = [
                 component: UserInfo,
                 icon: ''
             }]
+        },
+        {
+            path: 'usermanagement',
+            name: '用户管理',
+            show: true,
+            icon: IoFileTray,
+            component: UserManag,
         },
         {
             path: 'ys',

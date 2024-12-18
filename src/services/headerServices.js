@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-22 19:25:39
  * @LastEditors: Hesin
- * @LastEditTime: 2024-12-17 16:30:11
+ * @LastEditTime: 2024-12-18 09:40:23
  */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
@@ -115,17 +115,10 @@ export const getSession = async () => {
 };
 //信息修改
 
-export const fetchUpdateUserInfo = async (params) => {
+export const fetchUserSave = async (params) => {
 
     try {
-        const timestamp = new Date().getTime();
-        const userid = localStorage.getItem("userid"); // 假设用户ID存储在 localStorage 中
-        const resParams = {
-            addtime: timestamp,
-            id: userid,
-            ...params
-        }
-        const response = await await post(API_ENDPOINTS.userUpdateAPI, resParams);
+        const response = await await post(API_ENDPOINTS.userUpdateAPI, params);
         return response.code
     } catch (error) {
         console.error("Error sending chat message:", error);

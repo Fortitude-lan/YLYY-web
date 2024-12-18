@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-21 09:07:55
  * @LastEditors: Hesin
- * @LastEditTime: 2024-12-16 21:34:46
+ * @LastEditTime: 2024-12-18 09:31:01
  */
 export const API_ENDPOINTS = {
   lunbotuAPI: '/config/list', //轮播图接口
@@ -40,7 +40,9 @@ export const API_ENDPOINTS = {
   ksxinxiAPI: 'keshixinxi/update',//科室信息
   zxguahaoAPI: 'zaixianguahao/add',//挂号
   zaixianguahaoAPI: 'zaixianguahao/list',//挂号list
-
+  userPageAPI: 'yonghu/page',//用户列表
+  userAddAPI: 'yonghu/save',//用户add
+  userDelAPI: 'yonghu/delete',//用户 删除
   //后台 用户
   chongzhiAPI: 'jiuzhenkachongzhi/save',//充值金额
 };

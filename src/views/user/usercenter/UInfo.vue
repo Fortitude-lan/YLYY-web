@@ -183,7 +183,7 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { getSession, fetchUpdateUserInfo } from "@/services/headerServices";
+import { getSession, fetchUserSave } from "@/services/headerServices";
 import { fetchCharge } from "@/services/backUserServices";
 import { baseUrl } from "@/utils/util";
 import moment from "moment";
@@ -262,7 +262,7 @@ const onSubmit = async (formEl) => {
       console.log(infoValidateForm);
 
       // // 发送请求
-      const res = await fetchUpdateUserInfo(infoValidateForm);
+      const res = await fetchUserSave(infoValidateForm);
       if (res === 0) {
         ElMessage({
           message: "更新成功",
