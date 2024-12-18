@@ -395,14 +395,9 @@ const openUpdate = async (row) => {
 // 构建查询参数
 const buildQueryParams = () => {
   const query = {};
-  if (form.keshifenlei && form.keshifenlei !== "全部") {
-    query.keshifenlei = form.keshifenlei;
-  }
-  if (form.keshihao) {
-    query.keshihao = `%${form.keshihao}%`;
-  }
-  if (form.keshimingcheng) {
-    query.keshimingcheng = `%${form.keshimingcheng}%`;
+  
+  if (form.yishenggonghao) {
+    query.yishenggonghao = `%${form.yishenggonghao}%`;
   }
   if (form.yishengxingming) {
     query.yishengxingming = `%${form.yishengxingming}%`;
