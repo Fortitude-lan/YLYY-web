@@ -28,3 +28,13 @@ export const fetchBook = async (params) => {
         console.error("Error sending chat message:", error);
     }
 };
+//信息修改
+export const fetchUserSave = async (params) => {
+
+    try {
+        const response = await await post(API_ENDPOINTS.userUpdateAPI, params);
+        return response.code
+    } catch (error) {
+        console.error("Error sending chat message:", error);
+    }
+};

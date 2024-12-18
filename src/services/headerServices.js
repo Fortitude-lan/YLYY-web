@@ -4,7 +4,7 @@
  * @Author: Hesin
  * @Date: 2024-10-22 19:25:39
  * @LastEditors: Hesin
- * @LastEditTime: 2024-12-18 09:40:23
+ * @LastEditTime: 2024-12-18 10:19:25
  */
 import { API_ENDPOINTS } from '@/api/userAPI';
 import { post, get } from '@/utils/util';
@@ -32,7 +32,6 @@ export const yhloginService = async (params) => {
         throw error; // 抛出错误以供调用者处理
     }
 };
-
 
 // 获取轮播图数据
 export const fetchCarouselImages = async (page = 1, limit = 3) => {
@@ -111,16 +110,5 @@ export const getSession = async () => {
         }
     } catch (error) {
         console.error("Error in getSession:", error);
-    }
-};
-//信息修改
-
-export const fetchUserSave = async (params) => {
-
-    try {
-        const response = await await post(API_ENDPOINTS.userUpdateAPI, params);
-        return response.code
-    } catch (error) {
-        console.error("Error sending chat message:", error);
     }
 };

@@ -106,7 +106,16 @@ export const signUpService = async (params) => {
         throw error; // 抛出错误以供调用者处理
     }
 };
+//医生修改
+export const fetchYSSave = async (params) => {
 
+    try {
+        const response = await await post(API_ENDPOINTS.ysUpdateAPI, params);
+        return response.code
+    } catch (error) {
+        console.error("Error sending ysUpdateAPI message:", error);
+    }
+};
 // 科室信息
 export const fetchKeshiPage = async (params, page, limit) => {
     try {
@@ -213,10 +222,10 @@ export const fetchYsPageAPI = async (params, page, limit) => {
     }
 };
 //医生 add
-export const fetchYsPageADDAPI = async (params) => {
+export const fetchysPageAddAPI = async (params) => {
     try {
         console.log(params)
-        const res = await post(API_ENDPOINTS.ysPageADDAPI, { ...params });
+        const res = await post(API_ENDPOINTS.ysPageAddAPI, { ...params });
         return res.code
 
     } catch (error) {
